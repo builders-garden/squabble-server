@@ -1,0 +1,62 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  fid Int @id
+  displayName String
+  username String @unique // Add unique index since usernames should be unique
+  avatarUrl String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdGames Game[]
+  participatedGames GameParticipant[]
+}
+
+model Game {
+  id        String   @id @default(uuid())
+  status    GameStatus @default(PENDING)
+  betAmount Float
+  
+  totalFunds Float @default(0)
+  conversationId String?
+  participants GameParticipant[]
+  createdAt DateTime @default(now())
+
+  creatorFid Int
+  creator User @relation(fields: [creatorFid], references: [fid])
+
+  @@index([status]) // Add index on status for filtering games
+  @@index([creatorFid]) // Add index on creator for finding user's games
+}
+
+model GameParticipant {
+  id        String   @id @default(uuid())
+  fid       Int 
+  joined    Boolean  @default(false)
+  paid      Boolean  @default(false)
+  winner    Boolean  @default(false)
+  game      Game     @relation(fields: [gameId], references: [id])
+  gameId    String
+  paymentHash String?
+
+  user User @relation(fields: [fid], references: [fid])
+
+  @@index([fid]) // Add index on fid for finding player's games
+  @@index([gameId]) // Add index on gameId for finding game participants
+  @@unique([fid, gameId]) // Add unique constraint to prevent duplicate participants
+}
+
+enum GameStatus {
+  PENDING
+  READY
+  PLAYING
+  FINISHED
+}
