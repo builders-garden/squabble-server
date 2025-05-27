@@ -20,6 +20,9 @@ const PORT = process.env.PORT || 3001;
 // Game state tracking
 interface Player {
   id: string;
+  displayName: string;
+  username: string;
+  avatarUrl: string;
   ready: boolean;
   staked: boolean;
   score: number;
@@ -47,10 +50,13 @@ io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
 
   // 📥 Received Events Handlers
-  socket.on("connect_to_lobby", (roomId) => {
-    socket.join(roomId);
-    if (!gameRooms.has(roomId)) {
-      gameRooms.set(roomId, {
+  socket.on("connect_to_lobby", ({ player, gameId }) => {
+    console.log("player", player);
+    console.log(`[LOBBY] Player ${player.fid} connecting to game ${gameId}`);
+    socket.join(gameId);
+    if (!gameRooms.has(gameId)) {
+      console.log(`[LOBBY] Creating new game room ${gameId}`);
+      gameRooms.set(gameId, {
         players: new Map(),
         board: Array(15)
           .fill(null)
@@ -59,20 +65,27 @@ io.on("connection", (socket) => {
         timeRemaining: 300, // 5 minutes
       });
     }
-    const room = gameRooms.get(roomId)!;
-    room.players.set(socket.id, {
-      id: socket.id,
+    const room = gameRooms.get(gameId)!;
+    room.players.set(player.fid, {
+      id: player.fid,
+      username: player.username,
+      avatarUrl: player.avatarUrl,
+      displayName: player.displayName,
       ready: false,
       staked: false,
       score: 0,
     });
-    io.to(roomId).emit("player_joined", { playerId: socket.id });
-    io.to(roomId).emit("lobby_update", {
+    console.log(`[LOBBY] Player ${player.fid} joined game ${gameId}`);
+    io.to(gameId).emit("player_joined", { player });
+    io.to(gameId).emit("game_update", {
       players: Array.from(room.players.values()),
     });
   });
 
   socket.on("player_ready", (roomId) => {
+    console.log(
+      `[LOBBY] Player ${socket.id} marked as ready in game ${roomId}`
+    );
     const room = gameRooms.get(roomId);
     if (room) {
       const player = room.players.get(socket.id);
@@ -86,6 +99,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("player_stake_confirmed", (roomId) => {
+    console.log(
+      `[LOBBY] Player ${socket.id} confirmed stake in game ${roomId}`
+    );
     const room = gameRooms.get(roomId);
     if (room) {
       const player = room.players.get(socket.id);
@@ -99,6 +115,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("start_game", (roomId) => {
+    console.log(`[GAME] Starting game ${roomId}`);
     const room = gameRooms.get(roomId);
     if (room) {
       // Start game timer
@@ -106,6 +123,7 @@ io.on("connection", (socket) => {
         room.timeRemaining--;
         io.to(roomId).emit("timer_tick", room.timeRemaining);
         if (room.timeRemaining <= 0) {
+          console.log(`[GAME] Game ${roomId} ended due to time expiration`);
           clearInterval(room.timer!);
           io.to(roomId).emit("game_ended");
         }
@@ -119,6 +137,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("place_letter", ({ roomId, position, letter }) => {
+    console.log(
+      `[GAME] Player ${socket.id} placing letter "${letter}" at position [${position}] in game ${roomId}`
+    );
     const room = gameRooms.get(roomId);
     if (room) {
       const [row, col] = position;
@@ -134,6 +155,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("remove_letter", ({ roomId, position }) => {
+    console.log(
+      `[GAME] Player ${socket.id} removing letter at position [${position}] in game ${roomId}`
+    );
     const room = gameRooms.get(roomId);
     if (room) {
       const [row, col] = position;
@@ -148,6 +172,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("submit_word", ({ roomId, word, positions }) => {
+    console.log(
+      `[GAME] Player ${socket.id} submitting word "${word}" in game ${roomId}`
+    );
     const room = gameRooms.get(roomId);
     if (room) {
       // TODO: Implement word validation and scoring logic
@@ -155,6 +182,9 @@ io.on("connection", (socket) => {
       const player = room.players.get(socket.id);
       if (player) {
         player.score += score;
+        console.log(
+          `[GAME] Word "${word}" scored ${score} points for player ${socket.id}`
+        );
         io.to(roomId).emit("word_submitted", {
           word,
           score,
@@ -168,10 +198,11 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("Client disconnected:", socket.id);
+    console.log(`[CONNECTION] Client disconnected: ${socket.id}`);
     // Find and clean up any rooms the player was in
     gameRooms.forEach((room, roomId) => {
       if (room.players.has(socket.id)) {
+        console.log(`[LOBBY] Removing player ${socket.id} from game ${roomId}`);
         room.players.delete(socket.id);
         io.to(roomId).emit("player_left", { playerId: socket.id });
         io.to(roomId).emit("lobby_update", {
@@ -180,6 +211,7 @@ io.on("connection", (socket) => {
 
         // Clean up empty rooms
         if (room.players.size === 0) {
+          console.log(`[LOBBY] Cleaning up empty game room ${roomId}`);
           if (room.timer) {
             clearInterval(room.timer);
           }
