@@ -19,10 +19,6 @@ export class GameRoomManager {
   }
 
   public async createGameRoom(gameId: string): Promise<GameRoom> {
-    const game = await getGameById(gameId);
-    if (!game) {
-      throw new Error(`Game ${gameId} not found`);
-    }
     const room: GameRoom = {
       players: new Map(),
       board: Array(10)
@@ -31,6 +27,7 @@ export class GameRoomManager {
       timer: null,
       timeRemaining: 300, // 5 minutes
     };
+    console.log("room", room);
     this.gameRooms.set(gameId, room);
     return room;
   }
