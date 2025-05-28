@@ -327,6 +327,11 @@
   resolved "https://registry.yarnpkg.com/@socket.io/component-emitter/-/component-emitter-3.1.2.tgz#821f8442f4175d8f0467b9daf26e3a18e2d02af2"
   integrity sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==
 
+"@t3-oss/env-core@^0.13.6":
+  version "0.13.6"
+  resolved "https://registry.yarnpkg.com/@t3-oss/env-core/-/env-core-0.13.6.tgz#a5e2a21e0896a6476873fbf2b341d7f604c9123e"
+  integrity sha512-rH7FgcB1YGbv/tvv7mdJAxnNvRkK/gEqdVYBwO1AVvaWOTNuftqskxkEYyhM2O+lkNPJmTq5YBE7H+Unl7CLjg==
+
 "@tsconfig/node10@^1.0.7":
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/@tsconfig/node10/-/node10-1.0.11.tgz#6ee46400685f130e278128c7b38b7e031ff5b2f2"
@@ -2179,3 +2184,8 @@ yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+
+zod@^3.25.32:
+  version "3.25.32"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.25.32.tgz#769cc684072df780fc8f38130b0cd9283a8d3818"
+  integrity sha512-OSm2xTIRfW8CV5/QKgngwmQW/8aPfGdaQFlrGoErlgg/Epm7cjb6K6VEyExfe65a3VybUOnu381edLb0dfJl0g==

@@ -30,6 +30,7 @@ model Game {
   participants GameParticipant[]
   createdAt DateTime @default(now())
 
+  creatorAddress String
   creatorFid Int
   creator User @relation(fields: [creatorFid], references: [fid])
 

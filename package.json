@@ -16,12 +16,14 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@libsql/client": "^0.15.7",
+    "@prisma/adapter-libsql": "^6.4.1",
+    "@prisma/client": "^6.4.1",
+    "@t3-oss/env-core": "^0.13.6",
     "dotenv": "^16.4.5",
     "express": "^4.18.3",
     "socket.io": "^4.7.4",
-    "@prisma/adapter-libsql": "^6.4.1",
-    "@prisma/client": "^6.4.1",
-    "@libsql/client": "^0.15.7"
+    "zod": "^3.25.32"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
@@ -29,8 +31,8 @@
     "@typescript-eslint/eslint-plugin": "^7.1.0",
     "@typescript-eslint/parser": "^7.1.0",
     "eslint": "^8.57.0",
+    "prisma": "^6.8.2",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.3.3",
-    "prisma": "^6.8.2"
+    "typescript": "^5.3.3"
   }
 }
