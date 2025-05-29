@@ -8,8 +8,8 @@ import {
   } from "viem";
   import { base } from "viem/chains";
   import { privateKeyToAccount } from "viem/accounts";
-  import { SQUABBLE_CONTRACT_ABI, SQUABBLE_CONTRACT_ADDRESS } from "../constants";
-  import { env } from "../env";
+  import { SQUABBLE_CONTRACT_ABI, SQUABBLE_CONTRACT_ADDRESS } from "../constants.js";
+  import { env } from "../env.js";
   
   export async function setGameResult(gameId: bigint, winner: Address) {
       const account = privateKeyToAccount(env.BACKEND_PRIVATE_KEY as `0x${string}`);
