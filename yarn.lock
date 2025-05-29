@@ -2292,6 +2292,11 @@ which@^2.0.1:
   dependencies:
     isexe "^2.0.0"
 
+word-list@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/word-list/-/word-list-4.1.0.tgz#4eae3ff69b29309e23ec27d2c6a3ebe6dcdf50d0"
+  integrity sha512-4vtKyH8lGfaY8DHLTKQDfDxPixdK6BC/2W38TsPE07Wc8uPrMIbEO3quxBFSa2BfsDyG6pW47UEN/9tfYxN6BA==
+
 word-wrap@^1.2.5:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/word-wrap/-/word-wrap-1.2.5.tgz#d2c45c6dd4fbce621a66f136cbe328afd0410b34"

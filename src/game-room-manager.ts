@@ -1,7 +1,11 @@
 import { GameStatus } from "@prisma/client";
 import { GameRoom, Player } from "./interfaces.js";
-import { createGameParticipant, updateGameParticipant } from "./lib/prisma/game-participants/index.js";
-import { getGameById, updateGame } from "./lib/prisma/games/index.js";
+import {
+  createGameParticipant,
+  updateGameParticipant,
+} from "./lib/prisma/game-participants/index.js";
+import { updateGame } from "./lib/prisma/games/index.js";
+import { getRandomWord } from "./lib/words.js";
 
 export class GameRoomManager {
   private static instance: GameRoomManager;
@@ -44,14 +48,14 @@ export class GameRoomManager {
         fid: Number(player.fid),
         gameId,
         joined: true,
-        paid: false,
+        paid: true,
         winner: false,
         paymentHash: "",
       });
     }
   }
 
-  public removePlayer(gameId: string, playerFid: string): void {
+  public removePlayer(gameId: string, playerFid: number): void {
     const room = this.getGameRoom(gameId);
     if (room) {
       room.players.delete(playerFid);
@@ -63,7 +67,11 @@ export class GameRoomManager {
     }
   }
 
-  public async updatePlayerReady(gameId: string, playerFid: string, ready: boolean): Promise<void> {
+  public async updatePlayerReady(
+    gameId: string,
+    playerFid: number,
+    ready: boolean
+  ): Promise<void> {
     const room = this.getGameRoom(gameId);
     if (room) {
       const player = room.players.get(playerFid);
@@ -77,7 +85,11 @@ export class GameRoomManager {
     }
   }
 
-  public updatePlayerBoard(gameId: string, playerFid: string, board: string[][]): void {
+  public updatePlayerBoard(
+    gameId: string,
+    playerFid: number,
+    board: string[][]
+  ): void {
     const room = this.getGameRoom(gameId);
     if (room) {
       const player = room.players.get(playerFid);
@@ -90,7 +102,7 @@ export class GameRoomManager {
 
   public updatePlayerScore(
     gameId: string,
-    playerFid: string,
+    playerFid: number,
     score: number
   ): void {
     const room = this.getGameRoom(gameId);
@@ -145,6 +157,22 @@ export class GameRoomManager {
           onEnd();
         }
       }, 1000);
+    }
+  }
+
+  public initBoard(gameId: string): void {
+    const room = this.getGameRoom(gameId);
+    if (!room) {
+      throw new Error("Room not found");
+    }
+    room.board = Array.from({ length: 10 }, () => Array(10).fill(""));
+    const randomWord = getRandomWord(4, 5);
+    const center = Math.floor(room.board.length / 2);
+
+    // Place each letter of the word horizontally starting from center
+    for (let i = 0; i < randomWord.length; i++) {
+      room.board[center][center - Math.floor(randomWord.length / 2) + i] =
+        randomWord[i];
     }
   }
 

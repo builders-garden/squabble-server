@@ -2,7 +2,7 @@ import { SocketHandler } from "./SocketHandler.js";
 import { gameRoomManager } from "../game-room-manager.js";
 
 interface SubmitWordData {
-  player: { fid: string };
+  player: { fid: number };
   gameId: string;
   word: string;
   path: any[];

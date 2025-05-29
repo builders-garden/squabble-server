@@ -1,6 +1,6 @@
 export interface Player {
   socketId: string;
-  fid: string;
+  fid: number;
   displayName: string;
   username: string;
   avatarUrl: string;
@@ -10,7 +10,7 @@ export interface Player {
 }
 
 export interface GameRoom {
-  players: Map<string, Player>;
+  players: Map<number, Player>;
   board: string[][];
   timer: NodeJS.Timeout | null;
   timeRemaining: number;

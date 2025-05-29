@@ -2,7 +2,7 @@ import { gameRoomManager } from "../game-room-manager.js";
 import { SocketHandler } from "./SocketHandler.js";
 
 interface PlayerStakeConfirmedData {
-  player: { fid: string };
+  player: { fid: number };
   gameId: string;
   paymentHash: string;
 }

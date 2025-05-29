@@ -9,6 +9,7 @@ import { PlayerStakeConfirmedHandler } from "./handlers/PlayerStakeConfirmedHand
 import { RemoveLetterHandler } from "./handlers/RemoveLetterHandler.js";
 import { StartGameHandler } from "./handlers/StartGameHandler.js";
 import { SubmitWordHandler } from "./handlers/SubmitWordHandler.js";
+import { RefreshAvailableLetters } from "./handlers/RefreshAvailableLetters.js";
 
 // Load environment variables
 dotenv.config();
@@ -65,6 +66,11 @@ io.on("connection", (socket) => {
   socket.on("submit_word", ({ player, gameId, word, path, isNew }) => {
     const handler = new SubmitWordHandler(socket, io);
     handler.handle({ player, gameId, word, path, isNew });
+  });
+
+  socket.on("refresh_available_letters", ({ playerId, gameId }) => {
+    const handler = new RefreshAvailableLetters(socket, io);
+    handler.handle({ playerId, gameId });
   });
 
   socket.on("disconnect", async () => {

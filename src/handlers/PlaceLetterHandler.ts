@@ -2,7 +2,7 @@ import { gameRoomManager } from "../game-room-manager.js";
 import { SocketHandler } from "./SocketHandler.js";
 
 interface PlaceLetterData {
-  player: { fid: string };
+  player: { fid: number };
   gameId: string;
   x: number;
   y: number;
