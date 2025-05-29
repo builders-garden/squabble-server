@@ -2,11 +2,14 @@
   "name": "squabble-server",
   "version": "1.0.0",
   "main": "dist/index.js",
+  "type": "module",
   "license": "MIT",
   "scripts": {
     "start": "node dist/index.js",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
+    "build:watch": "tsc --watch",
+    "start:watch": "nodemon dist/index.js",
     "lint": "eslint . --ext .ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
@@ -31,6 +34,7 @@
     "@typescript-eslint/eslint-plugin": "^7.1.0",
     "@typescript-eslint/parser": "^7.1.0",
     "eslint": "^8.57.0",
+    "nodemon": "^3.1.10",
     "prisma": "^6.8.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.3.3"

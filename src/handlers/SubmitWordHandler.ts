@@ -1,6 +1,5 @@
-import { Server, Socket } from "socket.io";
-import { SocketHandler } from "./SocketHandler";
-import { gameRoomManager } from "../game-room-manager";
+import { SocketHandler } from "./SocketHandler.js";
+import { gameRoomManager } from "../game-room-manager.js";
 
 interface SubmitWordData {
   player: { fid: string };

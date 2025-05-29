@@ -1,5 +1,5 @@
-import { gameRoomManager } from "../game-room-manager";
-import { SocketHandler } from "./SocketHandler";
+import { gameRoomManager } from "../game-room-manager.js";
+import { SocketHandler } from "./SocketHandler.js";
 
 interface RemoveLetterData {
   player: { fid: string };

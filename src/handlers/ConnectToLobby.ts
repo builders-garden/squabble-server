@@ -1,7 +1,7 @@
-import { gameRoomManager } from "../game-room-manager";
-import { Player } from "../interfaces";
-import { getGameById } from "../lib/prisma/games";
-import { SocketHandler } from "./SocketHandler";
+import { gameRoomManager } from "../game-room-manager.js";
+import { Player } from "../interfaces.js";
+import { getGameById } from "../lib/prisma/games/index.js";
+import { SocketHandler } from "./SocketHandler.js";
 
 export class ConnectToLobbyHandler extends SocketHandler {
   async handle({ player, gameId }: { player: Player; gameId: string }) {

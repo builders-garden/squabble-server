@@ -1,7 +1,7 @@
 import { GameStatus } from "@prisma/client";
-import { GameRoom, Player } from "./interfaces";
-import { createGameParticipant, updateGameParticipant } from "./lib/prisma/game-participants";
-import { getGameById, updateGame } from "./lib/prisma/games";
+import { GameRoom, Player } from "./interfaces.js";
+import { createGameParticipant, updateGameParticipant } from "./lib/prisma/game-participants/index.js";
+import { getGameById, updateGame } from "./lib/prisma/games/index.js";
 
 export class GameRoomManager {
   private static instance: GameRoomManager;

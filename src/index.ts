@@ -2,13 +2,13 @@ import dotenv from "dotenv";
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { ConnectToLobbyHandler } from "./handlers/ConnectToLobby";
-import { DisconnectPlayerHandler } from "./handlers/DisconnectPlayer";
-import { PlaceLetterHandler } from "./handlers/PlaceLetterHandler";
-import { PlayerStakeConfirmedHandler } from "./handlers/PlayerStakeConfirmedHandler";
-import { RemoveLetterHandler } from "./handlers/RemoveLetterHandler";
-import { StartGameHandler } from "./handlers/StartGameHandler";
-import { SubmitWordHandler } from "./handlers/SubmitWordHandler";
+import { ConnectToLobbyHandler } from "./handlers/ConnectToLobby.js";
+import { DisconnectPlayerHandler } from "./handlers/DisconnectPlayer.js";
+import { PlaceLetterHandler } from "./handlers/PlaceLetterHandler.js";
+import { PlayerStakeConfirmedHandler } from "./handlers/PlayerStakeConfirmedHandler.js";
+import { RemoveLetterHandler } from "./handlers/RemoveLetterHandler.js";
+import { StartGameHandler } from "./handlers/StartGameHandler.js";
+import { SubmitWordHandler } from "./handlers/SubmitWordHandler.js";
 
 // Load environment variables
 dotenv.config();

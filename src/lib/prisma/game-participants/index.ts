@@ -1,5 +1,5 @@
 import { GameParticipant } from "@prisma/client";
-import { prisma } from "../client";
+import { prisma } from "../client.js";
 
 // Types
 export type CreateGameParticipantInput = {

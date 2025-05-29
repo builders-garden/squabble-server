@@ -1,5 +1,4 @@
 import { Server, Socket } from "socket.io";
-import { gameRoomManager } from "../game-room-manager";
 
 export class SocketHandler {
   protected socket: Socket;

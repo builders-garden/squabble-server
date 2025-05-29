@@ -1,6 +1,6 @@
 import { GameStatus } from "@prisma/client";
 import { Game } from "@prisma/client";
-import { prisma } from "../client";
+import { prisma } from "../client.js";
 
 // Get a game by ID
 export async function getGameById(id: string): Promise<Game | null> {

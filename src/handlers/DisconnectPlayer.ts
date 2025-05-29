@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
-import { gameRoomManager } from "../game-room-manager";
-import { SocketHandler } from "./SocketHandler";
+import { gameRoomManager } from "../game-room-manager.js";
+import { SocketHandler } from "./SocketHandler.js";
 
 export class DisconnectPlayerHandler extends SocketHandler {
   constructor(socket: Socket, io: Server) {
