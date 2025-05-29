@@ -26,16 +26,15 @@ import {
           transport: http(),
           account: account,
       });
-    
-      const { request } = await publicClient.simulateContract({
-          address: SQUABBLE_CONTRACT_ADDRESS,
-          abi: SQUABBLE_CONTRACT_ABI as Abi,
-          functionName: "setGameWinner",
-          args: [gameId, winner],
+
+      const tx = await walletClient.writeContract({
+        address: SQUABBLE_CONTRACT_ADDRESS,
+        abi: SQUABBLE_CONTRACT_ABI as Abi,
+        functionName: "setGameWinner",
+        args: [gameId, winner],
       });
-  
-      const tx = await walletClient.sendTransaction(request as SendTransactionParameters);
-  
+    
+      
       const txReceipt = await publicClient.waitForTransactionReceipt({
           hash: tx,
       });
