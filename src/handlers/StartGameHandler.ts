@@ -12,6 +12,11 @@ export class StartGameHandler extends SocketHandler {
 
     const room = gameRoomManager.getGameRoom(gameId);
     if (!room) return;
+    const allPlayersReady = Array.from(room.players.values()).every(player => player.ready);
+    if (!allPlayersReady) {
+      console.log(`[GAME] Not all players are ready to start game ${gameId}`);
+      return;
+    }
 
     // Start game timer
     room.timer = setInterval(() => {

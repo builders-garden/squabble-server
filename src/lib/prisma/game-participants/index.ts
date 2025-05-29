@@ -33,8 +33,6 @@ export async function createGameParticipant(
       update: {
         paymentHash: input.paymentHash,
         joined: input.joined,
-        paid: input.paid,
-        winner: input.winner,
       },
       create: {
         fid: input.fid,
@@ -98,12 +96,13 @@ export async function getGameParticipantsByFid(
 
 // Update a game participant
 export async function updateGameParticipant(
-  id: string,
+  fid: number,
+  gameId: string,
   input: UpdateGameParticipantInput
 ): Promise<GameParticipant> {
   try {
     return await prisma.gameParticipant.update({
-      where: { id },
+      where: { fid_gameId: { fid, gameId } },
       data: input,
     });
   } catch (error) {

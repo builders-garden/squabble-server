@@ -15,7 +15,7 @@ export class PlaceLetterHandler extends SocketHandler {
       `[GAME] Player ${player.fid} placing letter "${letter}" at position [${x}, ${y}] in game ${gameId}`
     );
 
-    const room = this.getGame(gameId);
+    const room = gameRoomManager.getGameRoom(gameId);
     if (!room) return;
 
     if (room.board[x][y] === "") {

@@ -1,3 +1,4 @@
+import { gameRoomManager } from "../game-room-manager";
 import { SocketHandler } from "./SocketHandler";
 
 interface PlayerStakeConfirmedData {
@@ -7,17 +8,16 @@ interface PlayerStakeConfirmedData {
 }
 
 export class PlayerStakeConfirmedHandler extends SocketHandler {
-  handle({ player, gameId }: PlayerStakeConfirmedData) {
+  async handle({ player, gameId }: PlayerStakeConfirmedData) {
     console.log(
       `[LOBBY] Player ${player.fid} confirmed stake in game ${gameId}`
     );
-
-    this.updateGame(gameId, (room) => {
-      const playerData = room.players.get(player.fid);
-      if (playerData) {
-        playerData.ready = true;
-        room.players.set(player.fid, playerData);
-      }
-    });
+    await gameRoomManager.updatePlayerReady(gameId, player.fid, true);
+    const room = gameRoomManager.getGameRoom(gameId);
+    if (room) {
+      this.emitToGame(gameId, "game_update", {
+        players: Array.from(room.players.values()),
+      });
+    }
   }
 }

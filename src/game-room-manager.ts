@@ -1,6 +1,6 @@
 import { GameStatus } from "@prisma/client";
 import { GameRoom, Player } from "./interfaces";
-import { createGameParticipant } from "./lib/prisma/game-participants";
+import { createGameParticipant, updateGameParticipant } from "./lib/prisma/game-participants";
 import { getGameById, updateGame } from "./lib/prisma/games";
 
 export class GameRoomManager {
@@ -59,6 +59,20 @@ export class GameRoomManager {
       // Clean up empty rooms
       if (room.players.size === 0) {
         this.endGame(gameId);
+      }
+    }
+  }
+
+  public async updatePlayerReady(gameId: string, playerFid: string, ready: boolean): Promise<void> {
+    const room = this.getGameRoom(gameId);
+    if (room) {
+      const player = room.players.get(playerFid);
+      if (player) {
+        player.ready = ready;
+        room.players.set(playerFid, player);
+        await updateGameParticipant(Number(playerFid), gameId, {
+          paid: true,
+        });
       }
     }
   }

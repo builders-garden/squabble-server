@@ -5,7 +5,6 @@ import { Server } from "socket.io";
 import { ConnectToLobbyHandler } from "./handlers/ConnectToLobby";
 import { DisconnectPlayerHandler } from "./handlers/DisconnectPlayer";
 import { PlaceLetterHandler } from "./handlers/PlaceLetterHandler";
-import { PlayerReadyHandler } from "./handlers/PlayerReadyHandler";
 import { PlayerStakeConfirmedHandler } from "./handlers/PlayerStakeConfirmedHandler";
 import { RemoveLetterHandler } from "./handlers/RemoveLetterHandler";
 import { StartGameHandler } from "./handlers/StartGameHandler";
@@ -40,11 +39,6 @@ io.on("connection", (socket) => {
   // 📥 Received Events Handlers
   socket.on("connect_to_lobby", async ({ player, gameId }) => {
     const handler = new ConnectToLobbyHandler(socket, io);
-    await handler.handle({ player, gameId });
-  });
-
-  socket.on("player_ready", async ({ player, gameId }) => {
-    const handler = new PlayerReadyHandler(socket, io);
     await handler.handle({ player, gameId });
   });
 
