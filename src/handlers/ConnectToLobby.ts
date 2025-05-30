@@ -5,7 +5,6 @@ import { SocketHandler } from "./SocketHandler.js";
 
 export class ConnectToLobbyHandler extends SocketHandler {
   async handle({ player, gameId }: { player: Player; gameId: string }) {
-    console.log("player", player);
     console.log(`[LOBBY] Player ${player.fid} connecting to game ${gameId}`);
 
     const game = await getGameById(gameId);

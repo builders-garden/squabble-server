@@ -67,9 +67,9 @@ io.on("connection", (socket) => {
     handler.handle({ player, gameId, x, y });
   });
 
-  socket.on("submit_word", ({ player, gameId, word, path, isNew }) => {
+  socket.on("submit_word", ({ player, gameId, word, path, isNew, placedLetters }) => {
     const handler = new SubmitWordHandler(socket, io);
-    handler.handle({ player, gameId, word, path, isNew });
+    handler.handle({ player, gameId, word, path, isNew, placedLetters });
   });
 
   socket.on("refresh_available_letters", ({ playerId, gameId }) => {

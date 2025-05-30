@@ -62,7 +62,6 @@ export class GameRoomManager {
       timer: null,
       timeRemaining: 300, // 5 minutes
     };
-    console.log("room", room);
     this.gameRooms.set(gameId, room);
     await this.saveToRedis(gameId, room);
     return room;
@@ -128,58 +127,61 @@ export class GameRoomManager {
     }
   }
 
-  public async updatePlayerBoard(
+  public async updateBoard(
     gameId: string,
     playerFid: number,
-    board: string[][]
-  ): Promise<void> {
+    word: string,
+    path: { x: number; y: number }[]
+  ): Promise<string[][]> {
     const room = await this.getGameRoom(gameId);
     if (room) {
-      const player = room.players.get(playerFid);
-      if (player) {
-        player.board = board;
-        room.players.set(playerFid, player);
-        await this.saveToRedis(gameId, room);
+      // Place each letter of the word on the board according to the path
+      for (let i = 0; i < word.length; i++) {
+        const { x, y } = path[i];
+        room.board[y][x] = word[i];
       }
+      await this.saveToRedis(gameId, room);
+      return room.board;
     }
+    return [];
   }
 
   public async updatePlayerScore(
     gameId: string,
     playerFid: number,
     score: number
-  ): Promise<void> {
+  ): Promise<GameRoom> {
     const room = await this.getGameRoom(gameId);
-    if (room) {
-      const player = room.players.get(playerFid);
-      if (player) {
-        player.score = score;
-        await this.saveToRedis(gameId, room);
-      }
+    if (!room) throw new Error("Room not found");
+    const player = room.players.get(playerFid);
+    if (player) {
+      player.score = score;
+      await this.saveToRedis(gameId, room);
     }
+    return room;
   }
 
   public async endGame(gameId: string): Promise<void> {
     const room = await this.getGameRoom(gameId);
-    if (room) {
-      // Clear any existing timer
-      if (room.timer) {
-        clearInterval(room.timer);
-      }
+    if (!room) throw new Error("Room not found");
 
-      // Update game status in DB
-      await updateGame(gameId, {
-        status: GameStatus.FINISHED,
-        totalFunds: Array.from(room.players.values()).reduce(
-          (sum, player) => sum + player.score,
-          0
-        ),
-      });
-
-      // Remove from Redis and memory
-      await redisClient.del(`${this.REDIS_PREFIX}${gameId}`);
-      this.gameRooms.delete(gameId);
+    // Clear any existing timer
+    if (room.timer) {
+      clearInterval(room.timer);
     }
+
+    // Update game status in DB
+    await updateGame(gameId, {
+      status: GameStatus.FINISHED,
+      totalFunds: Array.from(room.players.values()).reduce(
+        (sum, player) => sum + player.score,
+        0
+      ),
+    });
+
+    // Remove from Redis and memory
+    await redisClient.del(`${this.REDIS_PREFIX}${gameId}`);
+    this.gameRooms.delete(gameId);
   }
 
   public async startGameTimer(
@@ -188,23 +190,22 @@ export class GameRoomManager {
     onEnd: () => void
   ): Promise<void> {
     const room = await this.getGameRoom(gameId);
-    if (room) {
-      // Clear any existing timer
-      if (room.timer) {
-        clearInterval(room.timer);
-      }
-
-      room.timer = setInterval(async () => {
-        room.timeRemaining--;
-        await this.saveToRedis(gameId, room);
-        onTick(room.timeRemaining);
-
-        if (room.timeRemaining <= 0) {
-          clearInterval(room.timer!);
-          onEnd();
-        }
-      }, 1000);
+    if (!room) throw new Error("Room not found");
+    // Clear any existing timer
+    if (room.timer) {
+      clearInterval(room.timer);
     }
+
+    room.timer = setInterval(async () => {
+      room.timeRemaining--;
+      await this.saveToRedis(gameId, room);
+      onTick(room.timeRemaining);
+
+      if (room.timeRemaining <= 0) {
+        clearInterval(room.timer!);
+        onEnd();
+      }
+    }, 1000);
   }
 
   public async initBoard(gameId: string): Promise<void> {
@@ -222,19 +223,6 @@ export class GameRoomManager {
         randomWord[i];
     }
     await this.saveToRedis(gameId, room);
-  }
-
-  public async updateBoard(
-    gameId: string,
-    x: number,
-    y: number,
-    letter: string
-  ): Promise<void> {
-    const room = await this.getGameRoom(gameId);
-    if (room) {
-      room.board[x][y] = letter;
-      await this.saveToRedis(gameId, room);
-    }
   }
 
   public async getActiveGames(): Promise<string[]> {

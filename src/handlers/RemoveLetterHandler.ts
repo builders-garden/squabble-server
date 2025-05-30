@@ -18,10 +18,12 @@ export class RemoveLetterHandler extends SocketHandler {
     if (!room) return;
 
     if (room.board[x][y] !== "") {
-      await gameRoomManager.updatePlayerBoard(gameId, player.fid, room.board);
+      //await gameRoomManager.updatePlayerBoard(gameId, player.fid, room.board);
       this.emitToGame(gameId, "letter_removed", {
-        x,
-        y,
+        position: {
+          x,
+          y,
+        },
         gameId,
         player,
       });

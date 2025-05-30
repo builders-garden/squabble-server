@@ -19,11 +19,12 @@ export class PlaceLetterHandler extends SocketHandler {
     if (!room) return;
 
     if (room.board[x][y] === "") {
-      room.board[x][y] = letter;
-      await gameRoomManager.updatePlayerBoard(gameId, player.fid, room.board);
+      //await gameRoomManager.updatePlayerBoard(gameId, player.fid, room.board);
       this.emitToGame(gameId, "letter_placed", {
-        x,
-        y,
+        position: {
+          x,
+          y,
+        },
         letter,
         gameId,
         player,

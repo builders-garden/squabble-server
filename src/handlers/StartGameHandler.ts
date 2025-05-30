@@ -12,7 +12,6 @@ export class StartGameHandler extends SocketHandler {
     console.log(`[GAME] Starting game ${gameId}`);
 
     const room = await gameRoomManager.getGameRoom(gameId);
-    console.log("room", room);
     if (!room) return;
     const allPlayersReady = Array.from(room.players.values()).every(
       (player) => player.ready
@@ -23,16 +22,24 @@ export class StartGameHandler extends SocketHandler {
       return;
     }
 
+    // TODO: set to 300 after testing
+    room.timeRemaining = 1000;
     // Start game timer
     room.timer = setInterval(() => {
       room.timeRemaining--;
-      this.emitToGame(gameId, "timer_tick", room.timeRemaining);
+      this.emitToGame(gameId, "timer_tick", {
+        timeRemaining: room.timeRemaining,
+        gameId,
+      });
       if (room.timeRemaining <= 0) {
         console.log(`[GAME] Game ${gameId} ended due to time expiration`);
         clearInterval(room.timer!);
-        this.emitToGame(gameId, "game_ended", {});
+        this.emitToGame(gameId, "game_ended", {
+          gameId,
+          players: Array.from(room.players.values()),
+        });
       }
-    }, 1000);
+    }, 1200);
     // populate center of the board with a random word
     await gameRoomManager.initBoard(gameId);
     this.emitToGame(gameId, "game_started", {
