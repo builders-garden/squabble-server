@@ -22,13 +22,13 @@ export class DisconnectPlayerHandler extends SocketHandler {
 
     // Disconnect from each game room
     for (const gameId of gameRooms) {
-      const room = gameRoomManager.getGameRoom(gameId);
+      const room = await gameRoomManager.getGameRoom(gameId);
       if (room) {
         // Find and remove the player with matching socketId
         for (const [fid, player] of room.players.entries()) {
           if (player.socketId === socketId) {
             // Use GameRoomManager to remove the player
-            gameRoomManager.removePlayer(gameId, fid);
+            await gameRoomManager.removePlayer(gameId, fid);
 
             // Notify other players
             this.emitToGame(gameId, "player_left", { playerId: socketId });

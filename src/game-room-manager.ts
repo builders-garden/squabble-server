@@ -5,11 +5,14 @@ import {
   updateGameParticipant,
 } from "./lib/prisma/game-participants/index.js";
 import { updateGame } from "./lib/prisma/games/index.js";
+import { redisClient } from "./lib/redis/index.js";
 import { getRandomWord } from "./lib/words.js";
 
 export class GameRoomManager {
   private static instance: GameRoomManager;
   private gameRooms: Map<string, GameRoom>;
+  private readonly REDIS_PREFIX = "game_room:";
+  private readonly REDIS_TTL = 604800; // 7 days in seconds
 
   private constructor() {
     this.gameRooms = new Map();
@@ -20,6 +23,34 @@ export class GameRoomManager {
       GameRoomManager.instance = new GameRoomManager();
     }
     return GameRoomManager.instance;
+  }
+
+  private async saveToRedis(gameId: string, room: GameRoom): Promise<void> {
+    const serializedRoom = JSON.stringify({
+      players: Array.from(room.players.entries()),
+      board: room.board,
+      timeRemaining: room.timeRemaining,
+    });
+    await redisClient.setEx(
+      `${this.REDIS_PREFIX}${gameId}`,
+      this.REDIS_TTL,
+      serializedRoom
+    );
+  }
+
+  private async loadFromRedis(gameId: string): Promise<GameRoom | null> {
+    const serializedRoom = await redisClient.get(
+      `${this.REDIS_PREFIX}${gameId}`
+    );
+    if (!serializedRoom) return null;
+
+    const parsedRoom = JSON.parse(serializedRoom);
+    return {
+      players: new Map(parsedRoom.players),
+      board: parsedRoom.board,
+      timer: null,
+      timeRemaining: parsedRoom.timeRemaining,
+    };
   }
 
   public async createGameRoom(gameId: string): Promise<GameRoom> {
@@ -33,17 +64,27 @@ export class GameRoomManager {
     };
     console.log("room", room);
     this.gameRooms.set(gameId, room);
+    await this.saveToRedis(gameId, room);
     return room;
   }
 
-  public getGameRoom(gameId: string): GameRoom | undefined {
-    return this.gameRooms.get(gameId);
+  public async getGameRoom(gameId: string): Promise<GameRoom | undefined> {
+    let room = this.gameRooms.get(gameId);
+    if (!room) {
+      const redisRoom = await this.loadFromRedis(gameId);
+      if (redisRoom) {
+        this.gameRooms.set(gameId, redisRoom);
+        room = redisRoom;
+      }
+    }
+    return room;
   }
 
   public async addPlayer(gameId: string, player: Player): Promise<void> {
-    const room = this.getGameRoom(gameId);
+    const room = await this.getGameRoom(gameId);
     if (room) {
       room.players.set(player.fid, player);
+      await this.saveToRedis(gameId, room);
       await createGameParticipant({
         fid: Number(player.fid),
         gameId,
@@ -55,14 +96,15 @@ export class GameRoomManager {
     }
   }
 
-  public removePlayer(gameId: string, playerFid: number): void {
-    const room = this.getGameRoom(gameId);
+  public async removePlayer(gameId: string, playerFid: number): Promise<void> {
+    const room = await this.getGameRoom(gameId);
     if (room) {
       room.players.delete(playerFid);
+      await this.saveToRedis(gameId, room);
 
       // Clean up empty rooms
       if (room.players.size === 0) {
-        this.endGame(gameId);
+        await this.endGame(gameId);
       }
     }
   }
@@ -72,12 +114,13 @@ export class GameRoomManager {
     playerFid: number,
     ready: boolean
   ): Promise<void> {
-    const room = this.getGameRoom(gameId);
+    const room = await this.getGameRoom(gameId);
     if (room) {
       const player = room.players.get(playerFid);
       if (player) {
         player.ready = ready;
         room.players.set(playerFid, player);
+        await this.saveToRedis(gameId, room);
         await updateGameParticipant(Number(playerFid), gameId, {
           paid: true,
         });
@@ -85,37 +128,39 @@ export class GameRoomManager {
     }
   }
 
-  public updatePlayerBoard(
+  public async updatePlayerBoard(
     gameId: string,
     playerFid: number,
     board: string[][]
-  ): void {
-    const room = this.getGameRoom(gameId);
+  ): Promise<void> {
+    const room = await this.getGameRoom(gameId);
     if (room) {
       const player = room.players.get(playerFid);
       if (player) {
         player.board = board;
         room.players.set(playerFid, player);
+        await this.saveToRedis(gameId, room);
       }
     }
   }
 
-  public updatePlayerScore(
+  public async updatePlayerScore(
     gameId: string,
     playerFid: number,
     score: number
-  ): void {
-    const room = this.getGameRoom(gameId);
+  ): Promise<void> {
+    const room = await this.getGameRoom(gameId);
     if (room) {
       const player = room.players.get(playerFid);
       if (player) {
         player.score = score;
+        await this.saveToRedis(gameId, room);
       }
     }
   }
 
   public async endGame(gameId: string): Promise<void> {
-    const room = this.getGameRoom(gameId);
+    const room = await this.getGameRoom(gameId);
     if (room) {
       // Clear any existing timer
       if (room.timer) {
@@ -131,25 +176,27 @@ export class GameRoomManager {
         ),
       });
 
-      // Remove from memory
+      // Remove from Redis and memory
+      await redisClient.del(`${this.REDIS_PREFIX}${gameId}`);
       this.gameRooms.delete(gameId);
     }
   }
 
-  public startGameTimer(
+  public async startGameTimer(
     gameId: string,
     onTick: (timeRemaining: number) => void,
     onEnd: () => void
-  ): void {
-    const room = this.getGameRoom(gameId);
+  ): Promise<void> {
+    const room = await this.getGameRoom(gameId);
     if (room) {
       // Clear any existing timer
       if (room.timer) {
         clearInterval(room.timer);
       }
 
-      room.timer = setInterval(() => {
+      room.timer = setInterval(async () => {
         room.timeRemaining--;
+        await this.saveToRedis(gameId, room);
         onTick(room.timeRemaining);
 
         if (room.timeRemaining <= 0) {
@@ -160,8 +207,8 @@ export class GameRoomManager {
     }
   }
 
-  public initBoard(gameId: string): void {
-    const room = this.getGameRoom(gameId);
+  public async initBoard(gameId: string): Promise<void> {
+    const room = await this.getGameRoom(gameId);
     if (!room) {
       throw new Error("Room not found");
     }
@@ -174,26 +221,29 @@ export class GameRoomManager {
       room.board[center][center - Math.floor(randomWord.length / 2) + i] =
         randomWord[i];
     }
+    await this.saveToRedis(gameId, room);
   }
 
-  public updateBoard(
+  public async updateBoard(
     gameId: string,
     x: number,
     y: number,
     letter: string
-  ): void {
-    const room = this.getGameRoom(gameId);
+  ): Promise<void> {
+    const room = await this.getGameRoom(gameId);
     if (room) {
       room.board[x][y] = letter;
+      await this.saveToRedis(gameId, room);
     }
   }
 
-  public getActiveGames(): string[] {
-    return Array.from(this.gameRooms.keys());
+  public async getActiveGames(): Promise<string[]> {
+    const keys = await redisClient.keys(`${this.REDIS_PREFIX}*`);
+    return keys.map((key: string) => key.replace(this.REDIS_PREFIX, ""));
   }
 
-  public getGamePlayers(gameId: string): Player[] {
-    const room = this.getGameRoom(gameId);
+  public async getGamePlayers(gameId: string): Promise<Player[]> {
+    const room = await this.getGameRoom(gameId);
     return room ? Array.from(room.players.values()) : [];
   }
 
@@ -201,7 +251,7 @@ export class GameRoomManager {
     gameId: string,
     socketId: string
   ): Promise<void> {
-    const room = this.getGameRoom(gameId);
+    const room = await this.getGameRoom(gameId);
     if (room) {
       room.players.forEach((player, fid) => {
         if (player.socketId === socketId) {

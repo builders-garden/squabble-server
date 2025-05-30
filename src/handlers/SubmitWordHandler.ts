@@ -1,5 +1,6 @@
 import { SocketHandler } from "./SocketHandler.js";
 import { gameRoomManager } from "../game-room-manager.js";
+import { computeWordScore, isWordValid } from "../lib/words.js";
 
 interface SubmitWordData {
   player: { fid: number };
@@ -10,18 +11,28 @@ interface SubmitWordData {
 }
 
 export class SubmitWordHandler extends SocketHandler {
-  handle({ player, gameId, word, path }: SubmitWordData) {
+  async handle({ player, gameId, word, path }: SubmitWordData) {
     console.log(
       `[GAME] Player ${player.fid} submitting word "${word}" in game ${gameId}`
     );
 
-    const room = gameRoomManager.getGameRoom(gameId);
+    const room = await gameRoomManager.getGameRoom(gameId);
     if (!room) return;
 
-    // TODO: Implement word validation and scoring logic
     // TODO: update room board with new word positioning
-    const score = this.calculateWordScore(word);
+    const validWord = isWordValid(word);
     const playerData = room.players.get(player.fid);
+    if (!validWord) {
+      console.log(`[GAME] Word "${word}" is not valid`);
+      this.emitToGame(gameId, "word_not_valid", {
+        gameId,
+        word,
+        path,
+        player: playerData,
+        board: room.board,
+      });
+    }
+    const score = computeWordScore(word);
     
     if (playerData) {
       playerData.score += score;
@@ -42,10 +53,5 @@ export class SubmitWordHandler extends SocketHandler {
         players: Array.from(room.players.values()),
       });
     }
-  }
-
-  private calculateWordScore(word: string): number {
-    // TODO: Implement proper word scoring logic
-    return word.length;
   }
 } 

@@ -13,7 +13,7 @@ export class PlayerStakeConfirmedHandler extends SocketHandler {
       `[LOBBY] Player ${player.fid} confirmed stake in game ${gameId}`
     );
     await gameRoomManager.updatePlayerReady(gameId, player.fid, true);
-    const room = gameRoomManager.getGameRoom(gameId);
+    const room = await gameRoomManager.getGameRoom(gameId);
     if (room) {
       this.emitToGame(gameId, "game_update", {
         players: Array.from(room.players.values()),

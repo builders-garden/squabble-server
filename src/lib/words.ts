@@ -67,3 +67,13 @@ export const getRandomAvailableLetters = (
     return letter;
   });
 };
+
+export const isWordValid = (word: string) => {
+  return words.includes(word.toLowerCase());
+};
+
+export const computeWordScore = (word: string) => {
+  return word
+    .split("")
+    .reduce((acc, letter) => acc + LETTER_VALUES[letter.toLowerCase()], 0);
+};

@@ -16,12 +16,13 @@ export class ConnectToLobbyHandler extends SocketHandler {
 
     this.socket.join(gameId);
 
-    if (!gameRoomManager.getGameRoom(gameId)) {
+    let room = await gameRoomManager.getGameRoom(gameId);
+
+    if (!room) {
       console.log(`[LOBBY] Creating new game room ${gameId}`);
-      gameRoomManager.createGameRoom(gameId);
+      room = await gameRoomManager.createGameRoom(gameId);
     }
 
-    const room = gameRoomManager.getGameRoom(gameId)!;
     await gameRoomManager.addPlayer(gameId, player);
 
     console.log(`[LOBBY] Player ${player.fid} joined game ${gameId}`);

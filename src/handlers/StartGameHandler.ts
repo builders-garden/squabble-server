@@ -8,10 +8,10 @@ interface StartGameData {
 }
 
 export class StartGameHandler extends SocketHandler {
-  handle({ player, gameId }: StartGameData) {
+  async handle({ player, gameId }: StartGameData) {
     console.log(`[GAME] Starting game ${gameId}`);
 
-    const room = gameRoomManager.getGameRoom(gameId);
+    const room = await gameRoomManager.getGameRoom(gameId);
     console.log("room", room);
     if (!room) return;
     const allPlayersReady = Array.from(room.players.values()).every(
@@ -34,20 +34,20 @@ export class StartGameHandler extends SocketHandler {
       }
     }, 1000);
     // populate center of the board with a random word
-    gameRoomManager.initBoard(gameId);
+    await gameRoomManager.initBoard(gameId);
     this.emitToGame(gameId, "game_started", {
       board: room.board,
       timeRemaining: room.timeRemaining,
       players: Array.from(room.players.values()),
     });
-    const newPlayers = Array.from(room.players.values()).map(player => ({
+    const newPlayers = Array.from(room.players.values()).map((player) => ({
       ...player,
-      availableLetters: getRandomAvailableLetters(7)
-    }))
+      availableLetters: getRandomAvailableLetters(7),
+    }));
     console.log("newPlayers", newPlayers);
     this.emitToGame(gameId, "refreshed_available_letters", {
       gameId,
-      players: newPlayers
-    })
+      players: newPlayers,
+    });
   }
 }
