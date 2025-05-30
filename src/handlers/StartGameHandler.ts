@@ -22,8 +22,7 @@ export class StartGameHandler extends SocketHandler {
       return;
     }
 
-    // TODO: set to 300 after testing
-    room.timeRemaining = 1000;
+    room.timeRemaining = 300;
     // Start game timer
     room.timer = setInterval(() => {
       room.timeRemaining--;
