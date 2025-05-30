@@ -4,7 +4,7 @@ import { getGameById } from "../lib/prisma/games/index.js";
 import { SocketHandler } from "./SocketHandler.js";
 
 export class ConnectToLobbyHandler extends SocketHandler {
-  async handle({ player, gameId }: { player: Player; gameId: string }) {
+  async handle({ player, gameId }: { player: Player; gameId: string}) {
     console.log(`[LOBBY] Player ${player.fid} connecting to game ${gameId}`);
 
     const game = await getGameById(gameId);
@@ -22,7 +22,7 @@ export class ConnectToLobbyHandler extends SocketHandler {
       room = await gameRoomManager.createGameRoom(gameId);
     }
 
-    await gameRoomManager.addPlayer(gameId, player);
+    await gameRoomManager.addPlayer(gameId, { ...player, socketId: this.socket.id });
 
     console.log(`[LOBBY] Player ${player.fid} joined game ${gameId}`);
     this.emitToGame(gameId, "player_joined", { player });

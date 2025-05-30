@@ -11,6 +11,7 @@ import { RefreshAvailableLetters } from "./handlers/RefreshAvailableLetters.js";
 import { RemoveLetterHandler } from "./handlers/RemoveLetterHandler.js";
 import { StartGameHandler } from "./handlers/StartGameHandler.js";
 import { SubmitWordHandler } from "./handlers/SubmitWordHandler.js";
+import { PlayerLeaveHandler } from "./handlers/PlayerLeaveHandler.js";
 
 // Load environment variables
 dotenv.config();
@@ -45,6 +46,11 @@ io.on("connection", (socket) => {
   socket.on("connect_to_lobby", async ({ player, gameId }) => {
     const handler = new ConnectToLobbyHandler(socket, io);
     await handler.handle({ player, gameId });
+  });
+
+  socket.on("leave", async ({ playerId, gameId }) => {
+    const handler = new PlayerLeaveHandler(socket, io);
+    await handler.handle({ playerId, gameId });
   });
 
   socket.on("player_stake_confirmed", ({ player, gameId, paymentHash }) => {
