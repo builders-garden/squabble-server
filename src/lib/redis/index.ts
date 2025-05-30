@@ -2,7 +2,7 @@ import { createClient } from "redis";
 import { env } from "../env.js";
 
 class RedisClient {
-  private static instance: ReturnType<typeof createClient>;
+  private static instance: RedisClient;
   private client: ReturnType<typeof createClient>;
 
   private constructor() {
@@ -18,18 +18,9 @@ class RedisClient {
     this.client.connect();
   }
 
-  public static getInstance(): ReturnType<typeof createClient> {
+  public static getInstance(): RedisClient {
     if (!RedisClient.instance) {
-      RedisClient.instance = createClient({
-        url: env.REDIS_URL,
-      })
-        .on("error", (err: Error) => {
-          console.error("Redis Client Error:", err);
-        })
-        .on("connect", () => {
-          console.log("Redis Client Connected");
-        });
-      RedisClient.instance.connect();
+      RedisClient.instance = new RedisClient();
     }
     return RedisClient.instance;
   }

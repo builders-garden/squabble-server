@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { EventEmitter } from "events";
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
@@ -6,13 +7,16 @@ import { ConnectToLobbyHandler } from "./handlers/ConnectToLobby.js";
 import { DisconnectPlayerHandler } from "./handlers/DisconnectPlayer.js";
 import { PlaceLetterHandler } from "./handlers/PlaceLetterHandler.js";
 import { PlayerStakeConfirmedHandler } from "./handlers/PlayerStakeConfirmedHandler.js";
+import { RefreshAvailableLetters } from "./handlers/RefreshAvailableLetters.js";
 import { RemoveLetterHandler } from "./handlers/RemoveLetterHandler.js";
 import { StartGameHandler } from "./handlers/StartGameHandler.js";
 import { SubmitWordHandler } from "./handlers/SubmitWordHandler.js";
-import { RefreshAvailableLetters } from "./handlers/RefreshAvailableLetters.js";
 
 // Load environment variables
 dotenv.config();
+
+// Increase the maximum number of listeners
+EventEmitter.defaultMaxListeners = 20;
 
 const app = express();
 const httpServer = createServer(app);
@@ -78,12 +82,6 @@ io.on("connection", (socket) => {
     await handler.handle();
   });
 });
-
-// Helper function to calculate word score
-function calculateWordScore(word: string): number {
-  // TODO: Implement proper word scoring logic
-  return word.length;
-}
 
 // Start server
 httpServer.listen(PORT, () => {
