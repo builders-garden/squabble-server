@@ -69,11 +69,15 @@ export class SubmitWordHandler extends SocketHandler {
       (acc, w) => acc + computeWordScore(w),
       0
     );
-
+    const newScore = totalScore + (playerData.score || 0);
+    console.log(
+      `[GAME] Total score: ${totalScore} for player ${player.fid} with previous score ${playerData.score}`
+    );
+    console.log(`[GAME] New score: ${newScore} for player ${player.fid}`);
     const updatedRoom = await gameRoomManager.updatePlayerScore(
       gameId,
       player.fid,
-      totalScore
+      newScore
     );
     console.log(
       `[GAME] New words "${newWords.join(
@@ -90,7 +94,7 @@ export class SubmitWordHandler extends SocketHandler {
 
     this.emitToGame(gameId, "word_submitted", {
       gameId,
-      word,
+      words: newWords,
       path,
       score: totalScore,
       player: playerData,
@@ -100,7 +104,7 @@ export class SubmitWordHandler extends SocketHandler {
 
     this.emitToGame(gameId, "score_update", {
       player: playerData,
-      totalScore: totalScore,
+      newScore: newScore,
     });
   }
 }
