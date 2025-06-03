@@ -16,7 +16,6 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  createdGames Game[]
   participatedGames GameParticipant[]
 }
 
@@ -31,12 +30,7 @@ model Game {
   participants GameParticipant[]
   createdAt DateTime @default(now())
 
-  creatorAddress String
-  creatorFid Int
-  creator User @relation(fields: [creatorFid], references: [fid])
-
   @@index([status]) // Add index on status for filtering games
-  @@index([creatorFid]) // Add index on creator for finding user's games
 }
 
 model GameParticipant {
@@ -62,3 +56,4 @@ enum GameStatus {
   PLAYING
   FINISHED
 }
+
