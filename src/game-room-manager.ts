@@ -4,9 +4,10 @@ import {
   createGameParticipant,
   updateGameParticipant,
 } from "./lib/prisma/game-participants/index.js";
-import { updateGame } from "./lib/prisma/games/index.js";
+import { getGameById, updateGame } from "./lib/prisma/games/index.js";
 import { redisClient } from "./lib/redis/index.js";
 import { getRandomWord } from "./lib/words.js";
+import { getGame } from "viem/op-stack";
 
 export class GameRoomManager {
   private static instance: GameRoomManager;
@@ -50,10 +51,15 @@ export class GameRoomManager {
       board: parsedRoom.board,
       timer: null,
       timeRemaining: parsedRoom.timeRemaining,
+      contractGameId: parsedRoom.contractGameId,
     };
   }
 
   public async createGameRoom(gameId: string): Promise<GameRoom> {
+    const game = await getGameById(gameId);
+    if (!game || !game.contractGameId) {
+      throw new Error("Game doesn't exist on database");
+    }
     const room: GameRoom = {
       players: new Map(),
       board: Array(10)
@@ -61,6 +67,7 @@ export class GameRoomManager {
         .map(() => Array(10).fill("")),
       timer: null,
       timeRemaining: 300, // 5 minutes
+      contractGameId: game.contractGameId || 0,
     };
     this.gameRooms.set(gameId, room);
     await this.saveToRedis(gameId, room);

@@ -12,7 +12,6 @@ export async function getGameById(id: string): Promise<Game | null> {
           user: true,
         },
       },
-      creator: true,
     },
   });
 }
@@ -30,7 +29,6 @@ export async function getGames(filters?: {
           user: true,
         },
       },
-      creator: true,
     },
     orderBy: {
       createdAt: "desc",
@@ -61,24 +59,6 @@ export async function deleteGame(id: string): Promise<Game> {
   });
 }
 
-// Get games by creator
-export async function getGamesByCreator(creatorFid: number): Promise<Game[]> {
-  return prisma.game.findMany({
-    where: { creatorFid },
-    include: {
-      participants: {
-        include: {
-          user: true,
-        },
-      },
-      creator: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-}
-
 // Get games by status
 export async function getGamesByStatus(status: GameStatus): Promise<Game[]> {
   return prisma.game.findMany({
@@ -89,7 +69,6 @@ export async function getGamesByStatus(status: GameStatus): Promise<Game[]> {
           user: true,
         },
       },
-      creator: true,
     },
     orderBy: {
       createdAt: "desc",

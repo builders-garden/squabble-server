@@ -5,7 +5,6 @@ export const getUserByFid = async (fid: number) => {
   return await prisma.user.findUnique({
     where: { fid },
     include: {
-      createdGames: true,
       participatedGames: true,
     },
   });
@@ -16,7 +15,6 @@ export const getUserByUsername = async (username: string) => {
   return await prisma.user.findUnique({
     where: { username },
     include: {
-      createdGames: true,
       participatedGames: true,
     },
   });
@@ -48,7 +46,6 @@ export const deleteUser = async (fid: number) => {
 export const listUsers = async () => {
   return await prisma.user.findMany({
     include: {
-      createdGames: true,
       participatedGames: true,
     },
   });
