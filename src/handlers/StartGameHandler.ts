@@ -59,6 +59,9 @@ export class StartGameHandler extends SocketHandler {
           gameId,
           players: Array.from(room.players.values()),
         });
+        // Clear the interval again after game ended event
+        clearInterval(room.timer!);
+        room.timer = null;
       }
     }, 1200);
     // populate center of the board with a random word
