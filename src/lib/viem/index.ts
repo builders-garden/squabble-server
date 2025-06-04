@@ -4,19 +4,20 @@ import {
     http,
     type Address,
     Abi,
-    SendTransactionParameters,
   } from "viem";
   import { base } from "viem/chains";
   import { privateKeyToAccount } from "viem/accounts";
-  import { SQUABBLE_CONTRACT_ABI, SQUABBLE_CONTRACT_ADDRESS } from "../constants.js";
+  import { SQUABBLE_CONTRACT_ABI, SQUABBLE_CONTRACT_ADDRESS, ZERO_ADDRESS } from "../constants.js";
   import { env } from "../env.js";
 import { fetchUsersByFids } from "../neynar/index.js";
   
-  export async function setGameResult(gameId: string, isDraw: boolean, winnerFID: string) {
+export async function setGameResult(gameId: string, isDraw: boolean, winnerFID: string, partecipantsFIDs: string[]) {
+      
       const account = privateKeyToAccount(env.BACKEND_PRIVATE_KEY as `0x${string}`);
       if (!account) {
           throw new Error("No account found");
       }
+
       const publicClient = createPublicClient({
           chain: base,
           transport: http(),
@@ -29,12 +30,18 @@ import { fetchUsersByFids } from "../neynar/index.js";
       });
 
       if (isDraw) {
-        const winner = 10;
+
+        const partecipantsAddresses = await fetchUsersByFids(partecipantsFIDs.map(Number));
+        
+        if (partecipantsAddresses.length === 0) {
+          throw new Error("Partecipants not found");
+        }
+  
         const tx = await walletClient.writeContract({
             address: SQUABBLE_CONTRACT_ADDRESS,
             abi: SQUABBLE_CONTRACT_ABI as Abi,
             functionName: "setGameWinner",
-            args: [gameId, BigInt(winner)],
+            args: [gameId, ZERO_ADDRESS, partecipantsAddresses]
           });
         
           const txReceipt = await publicClient.waitForTransactionReceipt({
@@ -49,15 +56,19 @@ import { fetchUsersByFids } from "../neynar/index.js";
 
       } else {
 
-      const winnerAddresses = await fetchUsersByFids([Number(winnerFID)]);
+      const winnerAddress = await fetchUsersByFids([Number(winnerFID)]);
+      if (winnerAddress.length === 0) {
+        throw new Error("Winner not found");
+      }
 
-      //recuperare address da fid da neynar e mandare messaggio tramite agent
+      //partecipantsAddresses is empty array
+      const partecipantsAddresses: Address[] = [];
 
       const tx = await walletClient.writeContract({
         address: SQUABBLE_CONTRACT_ADDRESS,
         abi: SQUABBLE_CONTRACT_ABI as Abi,
         functionName: "setGameWinner",
-        args: [gameId, winner],
+        args: [gameId, winnerAddress, partecipantsAddresses]
       });
     
       
@@ -71,12 +82,41 @@ import { fetchUsersByFids } from "../neynar/index.js";
           throw new Error("Transaction failed");
       }
     }
-  }
+}
+
+export async function startGame(gameId: string) {
       
+    const account = privateKeyToAccount(env.BACKEND_PRIVATE_KEY as `0x${string}`);
+    if (!account) {
+        throw new Error("No account found");
+    }
+
+    const publicClient = createPublicClient({
+        chain: base,
+        transport: http(),
+    });
+
+    const walletClient = createWalletClient({
+        chain: base,
+        transport: http(),
+        account: account,
+    });
+
+    const tx = await walletClient.writeContract({
+      address: SQUABBLE_CONTRACT_ADDRESS,
+      abi: SQUABBLE_CONTRACT_ABI as Abi,
+      functionName: "startGame",
+      args: [gameId]
+    });
   
-      
-  
-      
-  
-      
-  
+    
+    const txReceipt = await publicClient.waitForTransactionReceipt({
+        hash: tx,
+    });
+
+    if (txReceipt.status === "success") {
+        return txReceipt;
+    } else {
+        throw new Error("Transaction failed");
+    }
+}
