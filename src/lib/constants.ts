@@ -1,6 +1,24 @@
 
-export const SQUABBLE_CONTRACT_ADDRESS = "0x69895c26ab7b52f0e78945e1a1878fc93f76e7e3";
+export const SQUABBLE_CONTRACT_ADDRESS = "0x8b02765fc0afA9aAC34B82322201FCD506Fb2bd8";
 export const SQUABBLE_CONTRACT_ABI = [
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "gameId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "stakeAmount",
+				"type": "uint256"
+			}
+		],
+		"name": "createGame",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
 	{
 		"inputs": [
 			{
@@ -51,17 +69,6 @@ export const SQUABBLE_CONTRACT_ABI = [
 				"type": "uint256"
 			}
 		],
-		"name": "GameDoesNotExist",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "id",
-				"type": "uint256"
-			}
-		],
 		"name": "GameFull",
 		"type": "error"
 	},
@@ -91,9 +98,22 @@ export const SQUABBLE_CONTRACT_ABI = [
 		"type": "error"
 	},
 	{
-		"inputs": [],
-		"name": "InvalidPlayerIndex",
-		"type": "error"
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			}
+		],
+		"name": "joinGame",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"inputs": [
@@ -115,6 +135,18 @@ export const SQUABBLE_CONTRACT_ABI = [
 			}
 		],
 		"name": "OwnableUnauthorizedAccount",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "pause",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "ReentrancyGuardReentrantCall",
 		"type": "error"
 	},
 	{
@@ -143,12 +175,6 @@ export const SQUABBLE_CONTRACT_ABI = [
 			},
 			{
 				"indexed": false,
-				"internalType": "address",
-				"name": "creator",
-				"type": "address"
-			},
-			{
-				"indexed": false,
 				"internalType": "uint256",
 				"name": "stakeAmount",
 				"type": "uint256"
@@ -162,29 +188,10 @@ export const SQUABBLE_CONTRACT_ABI = [
 		"inputs": [
 			{
 				"indexed": false,
-				"internalType": "uint256",
-				"name": "id",
-				"type": "uint256"
+				"internalType": "bool",
+				"name": "isDraw",
+				"type": "bool"
 			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "creator",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "stakeAmount",
-				"type": "uint256"
-			}
-		],
-		"name": "GameDeleted",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
 			{
 				"indexed": false,
 				"internalType": "uint256",
@@ -213,7 +220,7 @@ export const SQUABBLE_CONTRACT_ABI = [
 			{
 				"indexed": false,
 				"internalType": "address",
-				"name": "player2",
+				"name": "player",
 				"type": "address"
 			}
 		],
@@ -266,6 +273,69 @@ export const SQUABBLE_CONTRACT_ABI = [
 		"type": "event"
 	},
 	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "playerWinner",
+				"type": "address"
+			},
+			{
+				"internalType": "address[]",
+				"name": "players",
+				"type": "address[]"
+			}
+		],
+		"name": "setGameWinner",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			}
+		],
+		"name": "startGame",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "unpause",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -277,6 +347,19 @@ export const SQUABBLE_CONTRACT_ABI = [
 		],
 		"name": "Unpaused",
 		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			}
+		],
+		"name": "withdrawFromGame",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -296,55 +379,6 @@ export const SQUABBLE_CONTRACT_ABI = [
 		],
 		"name": "WithdrawFromGame",
 		"type": "event"
-	},
-	{
-		"inputs": [],
-		"name": "MAX_PLAYERS",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "MAX_STAKE",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "gameId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "creator",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "stakeAmount",
-				"type": "uint256"
-			}
-		],
-		"name": "createGame",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
 	},
 	{
 		"inputs": [
@@ -396,11 +430,6 @@ export const SQUABBLE_CONTRACT_ABI = [
 		"outputs": [
 			{
 				"internalType": "address",
-				"name": "creator",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
 				"name": "playerWinner",
 				"type": "address"
 			},
@@ -434,6 +463,19 @@ export const SQUABBLE_CONTRACT_ABI = [
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "getAllGameIds",
+		"outputs": [
+			{
+				"internalType": "uint256[]",
+				"name": "",
+				"type": "uint256[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "uint256",
@@ -447,18 +489,8 @@ export const SQUABBLE_CONTRACT_ABI = [
 				"components": [
 					{
 						"internalType": "address",
-						"name": "creator",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
 						"name": "playerWinner",
 						"type": "address"
-					},
-					{
-						"internalType": "address[]",
-						"name": "players",
-						"type": "address[]"
 					},
 					{
 						"internalType": "uint256",
@@ -498,12 +530,12 @@ export const SQUABBLE_CONTRACT_ABI = [
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "start",
+				"name": "startIndex",
 				"type": "uint256"
 			},
 			{
 				"internalType": "uint256",
-				"name": "end",
+				"name": "endIndex",
 				"type": "uint256"
 			}
 		],
@@ -513,18 +545,8 @@ export const SQUABBLE_CONTRACT_ABI = [
 				"components": [
 					{
 						"internalType": "address",
-						"name": "creator",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
 						"name": "playerWinner",
 						"type": "address"
-					},
-					{
-						"internalType": "address[]",
-						"name": "players",
-						"type": "address[]"
 					},
 					{
 						"internalType": "uint256",
@@ -561,21 +583,42 @@ export const SQUABBLE_CONTRACT_ABI = [
 		"type": "function"
 	},
 	{
-		"inputs": [
+		"inputs": [],
+		"name": "getTotalGames",
+		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "id",
+				"name": "",
 				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "player",
-				"type": "address"
 			}
 		],
-		"name": "joinGame",
-		"outputs": [],
-		"stateMutability": "nonpayable",
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "MAX_PLAYERS",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "MAX_STAKE",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -589,13 +632,6 @@ export const SQUABBLE_CONTRACT_ABI = [
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "pause",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -637,64 +673,6 @@ export const SQUABBLE_CONTRACT_ABI = [
 	},
 	{
 		"inputs": [],
-		"name": "renounceOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "id",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "playerWinner",
-				"type": "uint256"
-			}
-		],
-		"name": "setGameWinner",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "id",
-				"type": "uint256"
-			}
-		],
-		"name": "startGame",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "unpause",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
 		"name": "usdcAddress",
 		"outputs": [
 			{
@@ -705,18 +683,5 @@ export const SQUABBLE_CONTRACT_ABI = [
 		],
 		"stateMutability": "view",
 		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "id",
-				"type": "uint256"
-			}
-		],
-		"name": "withdrawFromGame",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
 	}
-]
+] as const;
