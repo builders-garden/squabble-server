@@ -9,6 +9,8 @@ export const env = createEnv({
     BACKEND_PRIVATE_KEY: z.string().min(1),
     REDIS_URL: z.string().min(1),
     NEYNAR_API_KEY: z.string().min(1),
+    RECEIVE_AGENT_SECRET: z.string().min(1),
+    NEXT_PUBLIC_AGENT_URL: z.string().min(1),
   },
   runtimeEnvStrict: {
     TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL,
@@ -16,5 +18,7 @@ export const env = createEnv({
     BACKEND_PRIVATE_KEY: process.env.BACKEND_PRIVATE_KEY,
     REDIS_URL: process.env.REDIS_URL,
     NEYNAR_API_KEY: process.env.NEYNAR_API_KEY,
+    RECEIVE_AGENT_SECRET: process.env.RECEIVE_AGENT_SECRET,
+    NEXT_PUBLIC_AGENT_URL: process.env.NEXT_PUBLIC_AGENT_URL,
   },
 });

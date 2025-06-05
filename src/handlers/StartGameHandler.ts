@@ -2,6 +2,11 @@ import { gameRoomManager } from "../game-room-manager.js";
 import { setGameResult, startGame } from "../lib/viem/index.js";
 import { getRandomAvailableLetters } from "../lib/words.js";
 import { SocketHandler } from "./SocketHandler.js";
+import fetch from "node-fetch";
+import { env } from "../lib/env.js";
+
+const appUrl = env.NEXT_PUBLIC_AGENT_URL;
+
 
 interface StartGameData {
   player: { fid: string };
@@ -18,7 +23,9 @@ export class StartGameHandler extends SocketHandler {
     const players = Array.from(room.players.values());
     const readyPlayers = players.filter((player) => player.ready);
     if (!readyPlayers.length || readyPlayers.length < 2) {
-      console.log(`[GAME] Not enough players are ready to start game ${gameId}`);
+      console.log(
+        `[GAME] Not enough players are ready to start game ${gameId}`
+      );
       return;
     }
 
@@ -55,6 +62,34 @@ export class StartGameHandler extends SocketHandler {
           winner.fid.toString(),
           Array.from(room.players.keys()).map((key) => key.toString())
         );
+
+        //send message to winner
+        try {
+          const externalApiUrl = `${appUrl}/api/send-message`; 
+
+          const messageResponse = await fetch(externalApiUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-agent-secret": env.RECEIVE_AGENT_SECRET,
+            },
+            body: JSON.stringify({
+              conversationId: room.conversationId,
+              message: `🎉 Congratulations! You won the Squabble game with a score of ${winner.score} points!`,
+            }),
+          });
+
+          if (!messageResponse.ok) {
+            console.error(
+              `Failed to send winner message: ${messageResponse.status} ${messageResponse.statusText}`
+            );
+            throw new Error("Failed to send winner message");
+          } else {
+          }
+        } catch (error) {
+          console.error("Error sending winner message:", error);
+        }
+
         this.emitToGame(gameId, "game_ended", {
           gameId,
           players: Array.from(room.players.values()),

@@ -52,6 +52,7 @@ export class GameRoomManager {
       timer: null,
       timeRemaining: parsedRoom.timeRemaining,
       contractGameId: parsedRoom.contractGameId,
+      conversationId: parsedRoom.conversationId,
     };
   }
 
@@ -68,6 +69,7 @@ export class GameRoomManager {
       timer: null,
       timeRemaining: 300, // 5 minutes
       contractGameId: game.contractGameId || 0,
+      conversationId: game.conversationId || "",
     };
     this.gameRooms.set(gameId, room);
     await this.saveToRedis(gameId, room);

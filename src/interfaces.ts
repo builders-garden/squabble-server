@@ -15,4 +15,5 @@ export interface GameRoom {
   timer: NodeJS.Timeout | null;
   timeRemaining: number;
   contractGameId: number;
+  conversationId: string;
 }
