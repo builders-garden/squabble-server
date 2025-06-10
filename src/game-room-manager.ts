@@ -96,7 +96,7 @@ export class GameRoomManager {
         gameId
       );
       if (gameParticipant) {
-        player.ready = gameParticipant.joined;
+        player.ready = gameParticipant.paid;
       }
       room.players.set(player.fid, player);
       await this.saveToRedis(gameId, room);
