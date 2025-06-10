@@ -37,7 +37,7 @@ export class StartGameHandler extends SocketHandler {
 
     await startGame(room.contractGameId.toString());
 
-    room.timeRemaining = 300;
+    room.timeRemaining = 180;
     // Start game timer
     room.timer = setInterval(async () => {
       room.timeRemaining--;

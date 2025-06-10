@@ -41,7 +41,7 @@ export async function setGameResult(gameId: string, isDraw: boolean, winnerFID: 
             address: SQUABBLE_CONTRACT_ADDRESS,
             abi: SQUABBLE_CONTRACT_ABI as Abi,
             functionName: "setGameWinner",
-            args: [gameId, ZERO_ADDRESS, partecipantsAddresses]
+            args: [gameId, ZERO_ADDRESS, partecipantsAddresses.map(p => p.verified_addresses.primary)]
           });
         
           const txReceipt = await publicClient.waitForTransactionReceipt({
