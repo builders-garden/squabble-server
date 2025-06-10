@@ -1,12 +1,12 @@
+import fetch from "node-fetch";
 import { gameRoomManager } from "../game-room-manager.js";
+import { env } from "../lib/env.js";
+import { setGameWinner } from "../lib/prisma/games/index.js";
 import { setGameResult, startGame } from "../lib/viem/index.js";
 import { getRandomAvailableLetters } from "../lib/words.js";
 import { SocketHandler } from "./SocketHandler.js";
-import fetch from "node-fetch";
-import { env } from "../lib/env.js";
 
 const appUrl = env.NEXT_PUBLIC_AGENT_URL;
-
 
 interface StartGameData {
   player: { fid: string };
@@ -56,16 +56,18 @@ export class StartGameHandler extends SocketHandler {
           title: "Game over!",
           message: "Calculating final scores and distributing rewards...",
         });
+
         await setGameResult(
           room.contractGameId.toString(),
           false,
           winner.fid.toString(),
           Array.from(room.players.keys()).map((key) => key.toString())
         );
+        await setGameWinner(gameId, winner.fid);
 
         //send message to winner
         try {
-          const externalApiUrl = `${appUrl}/api/send-message`; 
+          const externalApiUrl = `${appUrl}/api/send-message`;
 
           const messageResponse = await fetch(externalApiUrl, {
             method: "POST",

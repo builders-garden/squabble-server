@@ -75,3 +75,21 @@ export async function getGamesByStatus(status: GameStatus): Promise<Game[]> {
     },
   });
 }
+
+export async function setGameWinner(gameId: string, winnerFid: number): Promise<Game> {
+  return prisma.$transaction([
+    prisma.game.update({
+      where: { id: gameId },
+      data: { status: GameStatus.FINISHED }
+    }),
+    prisma.gameParticipant.update({
+      where: {
+        fid_gameId: {
+          fid: winnerFid,
+          gameId: gameId
+        }
+      },
+      data: { winner: true }
+    })
+  ]).then(([game]) => game);
+}
