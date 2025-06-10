@@ -2,12 +2,12 @@ import { GameStatus } from "@prisma/client";
 import { GameRoom, Player } from "./interfaces.js";
 import {
   createGameParticipant,
+  getGameParticipantByFidAndGameId,
   updateGameParticipant,
 } from "./lib/prisma/game-participants/index.js";
 import { getGameById, updateGame } from "./lib/prisma/games/index.js";
 import { redisClient } from "./lib/redis/index.js";
 import { getRandomWord } from "./lib/words.js";
-import { getGame } from "viem/op-stack";
 
 export class GameRoomManager {
   private static instance: GameRoomManager;
@@ -91,15 +91,22 @@ export class GameRoomManager {
   public async addPlayer(gameId: string, player: Player): Promise<void> {
     const room = await this.getGameRoom(gameId);
     if (room) {
+      const gameParticipant = await getGameParticipantByFidAndGameId(
+        player.fid,
+        gameId
+      );
+      if (gameParticipant) {
+        player.ready = gameParticipant.joined;
+      }
       room.players.set(player.fid, player);
       await this.saveToRedis(gameId, room);
       await createGameParticipant({
         fid: Number(player.fid),
         gameId,
-        joined: true,
-        paid: true,
-        winner: false,
-        paymentHash: "",
+        joined: gameParticipant?.joined || true,
+        paid: gameParticipant?.paid || false,
+        winner: gameParticipant?.winner || false,
+        paymentHash: gameParticipant?.paymentHash || "",
       });
     }
   }
