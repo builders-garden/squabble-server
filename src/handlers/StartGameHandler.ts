@@ -96,7 +96,9 @@ export class StartGameHandler extends SocketHandler {
             },
             body: JSON.stringify({
               conversationId: room.conversationId,
-              message: `🎉 Congratulations ${winner.user.displayName}! You've won the Squabble game with ${winner.points} points! 🏆`,
+              message: isDraw 
+                ? `🎯 It's a draw! Multiple players tied with ${winner.points} points! The prize will be split between: ${winners.map(w => w.user.displayName).join(', ')} 🤝`
+                : `🎉 Congratulations ${winner.user.displayName}! You've won the Squabble game with ${winner.points} points! 🏆`,
             }),
           });
 
