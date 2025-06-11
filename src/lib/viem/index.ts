@@ -78,7 +78,7 @@ export async function setGameResult(
       address: SQUABBLE_CONTRACT_ADDRESS,
       abi: SQUABBLE_CONTRACT_ABI as Abi,
       functionName: "setGameWinner",
-      args: [gameId, winnerAddress, partecipantsAddresses],
+      args: [gameId, winnerAddress[0].verified_addresses.primary.eth_address, partecipantsAddresses],
     });
 
     const txReceipt = await publicClient.waitForTransactionReceipt({
