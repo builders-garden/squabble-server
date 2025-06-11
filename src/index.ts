@@ -53,9 +53,9 @@ io.on("connection", (socket) => {
     await handler.handle({ playerId, gameId });
   });
 
-  socket.on("player_stake_confirmed", ({ player, gameId, paymentHash }) => {
+  socket.on("player_stake_confirmed", ({ player, gameId, paymentHash, payerAddress }) => {
     const handler = new PlayerStakeConfirmedHandler(socket, io);
-    handler.handle({ player, gameId, paymentHash });
+    handler.handle({ player, gameId, paymentHash, payerAddress });
   });
 
   socket.on("start_game", ({ player, gameId }) => {
