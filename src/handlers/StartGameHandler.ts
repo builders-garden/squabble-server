@@ -2,10 +2,11 @@ import fetch from "node-fetch";
 import { gameRoomManager } from "../game-room-manager.js";
 import { env } from "../lib/env.js";
 import { getGameParticipantsByGameId } from "../lib/prisma/game-participants/index.js";
-import { setGameWinner } from "../lib/prisma/games/index.js";
+import { getGameById, setGameWinner, updateGame } from "../lib/prisma/games/index.js";
 import { setGameResult, startGame } from "../lib/viem/index.js";
 import { getRandomAvailableLetters } from "../lib/words.js";
 import { SocketHandler } from "./SocketHandler.js";
+import { GameStatus } from "@prisma/client";
 
 const appUrl = env.NEXT_PUBLIC_AGENT_URL;
 
@@ -21,12 +22,19 @@ export class StartGameHandler extends SocketHandler {
     const room = await gameRoomManager.getGameRoom(gameId);
     if (!room) return;
 
+    const game = await getGameById(gameId);
+
     const players = Array.from(room.players.values());
     const readyPlayers = players.filter((player) => player.ready);
     if (!readyPlayers.length || readyPlayers.length < 2) {
       console.log(
         `[GAME] Not enough players are ready to start game ${gameId}`
       );
+      return;
+    }
+
+    if (game?.status === GameStatus.PLAYING) {
+      console.log(`[GAME] Game ${gameId} is already started`);
       return;
     }
 
@@ -37,6 +45,10 @@ export class StartGameHandler extends SocketHandler {
     });
 
     await startGame(room.contractGameId.toString());
+
+    await updateGame(gameId, {
+      status: GameStatus.PLAYING,
+    });
 
     room.timeRemaining = 60;
     // Start game timer
