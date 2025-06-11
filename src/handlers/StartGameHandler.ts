@@ -45,7 +45,7 @@ export class StartGameHandler extends SocketHandler {
       message: "Initializing game board and preparing your letters...",
     });
 
-    await startGame(room.contractGameId.toString());
+    await startGame(game?.contractGameId?.toString() ?? "");
 
     await updateGame(gameId, {
       status: GameStatus.PLAYING,
