@@ -128,3 +128,12 @@ export async function startGame(gameId: string) {
     throw new Error("Transaction failed");
   }
 }
+
+export const getTransactionReceipt = async (hash: `0x${string}`) => {
+  const publicClient = createPublicClient({
+    chain: base,
+    transport: http(),
+  });
+
+  return await publicClient.getTransactionReceipt({ hash });
+};

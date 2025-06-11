@@ -9,6 +9,7 @@ export type CreateGameParticipantInput = {
   paid?: boolean;
   winner?: boolean;
   paymentHash?: string;
+  address?: string;
 };
 
 export type UpdateGameParticipantInput = {
@@ -16,6 +17,7 @@ export type UpdateGameParticipantInput = {
   paid?: boolean;
   winner?: boolean;
   paymentHash?: string;
+  address?: string;
 };
 
 // Create a new game participant
@@ -33,6 +35,7 @@ export async function createGameParticipant(
       update: {
         paymentHash: input.paymentHash,
         joined: input.joined,
+        address: input.address,
       },
       create: {
         fid: input.fid,
@@ -41,6 +44,7 @@ export async function createGameParticipant(
         joined: input.joined,
         paid: input.paid,
         winner: input.winner,
+        address: input.address,
       },
     });
   } catch (error) {

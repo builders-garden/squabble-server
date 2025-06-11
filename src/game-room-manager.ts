@@ -137,7 +137,8 @@ export class GameRoomManager {
     gameId: string,
     playerFid: number,
     ready: boolean,
-    paymentHash: string
+    paymentHash: string,
+    address: string
   ): Promise<void> {
     const room = await this.getGameRoom(gameId);
     if (room) {
@@ -149,6 +150,7 @@ export class GameRoomManager {
         await updateGameParticipant(Number(playerFid), gameId, {
           paid: true,
           paymentHash,
+          address
         });
       }
     }
