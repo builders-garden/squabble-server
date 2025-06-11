@@ -7,6 +7,7 @@ import { setGameResult, startGame } from "../lib/viem/index.js";
 import { getRandomAvailableLetters } from "../lib/words.js";
 import { SocketHandler } from "./SocketHandler.js";
 import { GameStatus } from "@prisma/client";
+import { GAME_DURATION } from "../lib/constants.js";
 
 const appUrl = env.NEXT_PUBLIC_AGENT_URL;
 
@@ -50,7 +51,7 @@ export class StartGameHandler extends SocketHandler {
       status: GameStatus.PLAYING,
     });
 
-    room.timeRemaining = 60;
+    room.timeRemaining = GAME_DURATION;
     // Start game timer
     room.timer = setInterval(async () => {
       room.timeRemaining--;
