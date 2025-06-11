@@ -1,3 +1,4 @@
+import { GameStatus } from "@prisma/client";
 import { gameRoomManager } from "../game-room-manager.js";
 import { Player } from "../interfaces.js";
 import { getGameById } from "../lib/prisma/games/index.js";
@@ -10,6 +11,16 @@ export class ConnectToLobbyHandler extends SocketHandler {
     const game = await getGameById(gameId);
     if (!game) {
       console.error(`[LOBBY] Game ${gameId} not found`);
+      return;
+    }
+
+    if (game.status === GameStatus.FINISHED) {
+      console.error(`[LOBBY] Cannot join game ${gameId} because it's already finished`);
+      return;
+    }
+
+    if (game.status === GameStatus.PLAYING) {
+      console.error(`[LOBBY] Cannot join game ${gameId} because it's already started`);
       return;
     }
 

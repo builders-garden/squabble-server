@@ -42,6 +42,7 @@ model GameParticipant {
   game      Game     @relation(fields: [gameId], references: [id])
   gameId    String
   paymentHash String?
+  points Int @default(0)
 
   user User @relation(fields: [fid], references: [fid])
 

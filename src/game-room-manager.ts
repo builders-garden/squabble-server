@@ -4,6 +4,7 @@ import {
   createGameParticipant,
   getGameParticipantByFidAndGameId,
   updateGameParticipant,
+  updateGameParticipantPoints,
 } from "./lib/prisma/game-participants/index.js";
 import { getGameById, updateGame } from "./lib/prisma/games/index.js";
 import { redisClient } from "./lib/redis/index.js";
@@ -127,7 +128,8 @@ export class GameRoomManager {
   public async updatePlayerReady(
     gameId: string,
     playerFid: number,
-    ready: boolean
+    ready: boolean,
+    paymentHash: string
   ): Promise<void> {
     const room = await this.getGameRoom(gameId);
     if (room) {
@@ -138,6 +140,7 @@ export class GameRoomManager {
         await this.saveToRedis(gameId, room);
         await updateGameParticipant(Number(playerFid), gameId, {
           paid: true,
+          paymentHash,
         });
       }
     }
@@ -172,7 +175,10 @@ export class GameRoomManager {
     const player = room.players.get(playerFid);
     if (player) {
       player.score = score;
-      await this.saveToRedis(gameId, room);
+      await Promise.all([
+        this.saveToRedis(gameId, room),
+        updateGameParticipantPoints(playerFid, gameId, score),
+      ]);
     }
     return room;
   }

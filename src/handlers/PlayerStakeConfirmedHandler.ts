@@ -8,11 +8,11 @@ interface PlayerStakeConfirmedData {
 }
 
 export class PlayerStakeConfirmedHandler extends SocketHandler {
-  async handle({ player, gameId }: PlayerStakeConfirmedData) {
+  async handle({ player, gameId, paymentHash }: PlayerStakeConfirmedData) {
     console.log(
       `[LOBBY] Player ${player.fid} confirmed stake in game ${gameId}`
     );
-    await gameRoomManager.updatePlayerReady(gameId, player.fid, true);
+    await gameRoomManager.updatePlayerReady(gameId, player.fid, true, paymentHash);
     const room = await gameRoomManager.getGameRoom(gameId);
     if (room) {
       this.emitToGame(gameId, "game_update", {

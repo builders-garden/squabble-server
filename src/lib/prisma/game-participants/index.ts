@@ -162,3 +162,14 @@ export async function getGameWinners(
     throw new Error(`Failed to get game winners: ${error}`);
   }
 }
+
+export async function updateGameParticipantPoints(
+  fid: number,
+  gameId: string,
+  points: number
+): Promise<GameParticipant> {
+  return await prisma.gameParticipant.update({
+    where: { fid_gameId: { fid, gameId } },
+    data: { points: points },
+  });
+}
