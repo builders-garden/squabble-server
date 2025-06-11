@@ -89,7 +89,7 @@ export class GameRoomManager {
     return room;
   }
 
-  public async addPlayer(gameId: string, player: Player): Promise<void> {
+  public async addPlayer(gameId: string, player: Player, isPaidGame: boolean): Promise<void> {
     const room = await this.getGameRoom(gameId);
     if (room) {
       const gameParticipant = await getGameParticipantByFidAndGameId(
@@ -97,7 +97,10 @@ export class GameRoomManager {
         gameId
       );
       if (gameParticipant) {
-        player.ready = gameParticipant.paid;
+        player.ready = isPaidGame ? gameParticipant.paid : true;
+      }
+      if (!isPaidGame) {
+        player.ready = true;
       }
       room.players.set(player.fid, player);
       await this.saveToRedis(gameId, room);
