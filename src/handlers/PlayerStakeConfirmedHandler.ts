@@ -6,15 +6,15 @@ interface PlayerStakeConfirmedData {
   player: { fid: number };
   gameId: string;
   paymentHash: string;
+  payerAddress: string;
 }
 
 export class PlayerStakeConfirmedHandler extends SocketHandler {
-  async handle({ player, gameId, paymentHash }: PlayerStakeConfirmedData) {
+  async handle({ player, gameId, paymentHash, payerAddress }: PlayerStakeConfirmedData) {
     console.log(
       `[LOBBY] Player ${player.fid} confirmed stake in game ${gameId}`
     );
-    const receipt = await getTransactionReceipt(paymentHash as `0x${string}`);
-    await gameRoomManager.updatePlayerReady(gameId, player.fid, true, paymentHash, receipt.from);
+    await gameRoomManager.updatePlayerReady(gameId, player.fid, true, paymentHash, payerAddress);
     const room = await gameRoomManager.getGameRoom(gameId);
     if (room) {
       this.emitToGame(gameId, "game_update", {
