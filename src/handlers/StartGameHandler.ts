@@ -77,7 +77,7 @@ export class StartGameHandler extends SocketHandler {
             },
             body: JSON.stringify({
               conversationId: room.conversationId,
-              message: `🎉 Congratulations! You won the Squabble game with a score of ${winner.score} points!`,
+              message: `🎉 Congratulations ${winner.displayName}! You've won the Squabble game with ${winner.score} points! 🏆`,
             }),
           });
 
