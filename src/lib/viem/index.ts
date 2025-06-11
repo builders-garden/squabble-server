@@ -18,7 +18,7 @@ import { fetchUsersByFids } from "../neynar/index.js";
 export async function setGameResult(
   gameId: string,
   isDraw: boolean,
-  winnerFIDs: string[]
+  winnersAddresses: Address[]
 ) {
   const account = privateKeyToAccount(env.BACKEND_PRIVATE_KEY as `0x${string}`);
   if (!account) {
@@ -37,11 +37,6 @@ export async function setGameResult(
   });
 
   if (isDraw) {
-    const winnersAddresses = await fetchUsersByFids(winnerFIDs.map(Number));
-
-    if (winnerFIDs.length === 0) {
-      throw new Error("Partecipants not found");
-    }
     const tx = await walletClient.writeContract({
       address: SQUABBLE_CONTRACT_ADDRESS,
       abi: SQUABBLE_CONTRACT_ABI as Abi,
@@ -49,7 +44,7 @@ export async function setGameResult(
       args: [
         gameId,
         ZERO_ADDRESS,
-        winnersAddresses.map((p) => p.verified_addresses.primary.eth_address),
+        winnersAddresses,
       ],
     });
 
@@ -63,11 +58,6 @@ export async function setGameResult(
       throw new Error("Transaction failed");
     }
   } else {
-    const winnerAddress = await fetchUsersByFids([Number(winnerFIDs[0])]);
-    if (winnerAddress.length === 0) {
-      throw new Error("Winner not found");
-    }
-
     //partecipantsAddresses is empty array
     const partecipantsAddresses: Address[] = [];
 
@@ -77,7 +67,7 @@ export async function setGameResult(
       functionName: "setGameWinner",
       args: [
         gameId,
-        winnerAddress[0].verified_addresses.primary.eth_address,
+        winnersAddresses[0],
         partecipantsAddresses,
       ],
     });

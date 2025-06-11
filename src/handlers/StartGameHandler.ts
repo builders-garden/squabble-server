@@ -68,7 +68,7 @@ export class StartGameHandler extends SocketHandler {
         await setGameResult(
           room.contractGameId.toString(),
           isDraw,
-          winners.map((p) => p.fid.toString())
+          winners.map((p) => p.address as `0x${string}`)
         );
         await setGameWinner(gameId, winner.fid);
 
