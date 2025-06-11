@@ -45,10 +45,6 @@ export async function setGameResult(
     if (partecipantsAddresses.length === 0) {
       throw new Error("Partecipants not found");
     }
-    console.log(
-      "partecipantsAddresses",
-      partecipantsAddresses.map((p) => p.verified_addresses.primary)
-    );
     const tx = await walletClient.writeContract({
       address: SQUABBLE_CONTRACT_ADDRESS,
       abi: SQUABBLE_CONTRACT_ABI as Abi,
@@ -56,7 +52,7 @@ export async function setGameResult(
       args: [
         gameId,
         ZERO_ADDRESS,
-        partecipantsAddresses.map((p) => p.verified_addresses.primary),
+        partecipantsAddresses.map((p) => p.verified_addresses.primary.eth_address),
       ],
     });
 
