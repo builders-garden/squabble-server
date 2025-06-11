@@ -65,7 +65,7 @@ export async function getGameParticipantByFidAndGameId(
 // Get game participants by game ID
 export async function getGameParticipantsByGameId(
   gameId: string
-): Promise<GameParticipant[]> {
+): Promise<(GameParticipant & { user: User })[]> {
   try {
     return await prisma.gameParticipant.findMany({
       where: { gameId },
@@ -76,20 +76,6 @@ export async function getGameParticipantsByGameId(
   } catch (error) {
     throw new Error(`Failed to get game participants: ${error}`);
   }
-}
-
-export async function getGameParticipantWithMorePoints(
-  gameId: string
-): Promise<(GameParticipant & { user: User }) | null> {
-  return await prisma.gameParticipant.findFirst({
-    where: { gameId, points: { gt: 0 } },
-    include: {
-      user: true,
-    },
-    orderBy: {
-      points: 'desc'
-    }
-  });
 }
 
 export async function getGameWinner(

@@ -18,8 +18,7 @@ import { fetchUsersByFids } from "../neynar/index.js";
 export async function setGameResult(
   gameId: string,
   isDraw: boolean,
-  winnerFID: string,
-  partecipantsFIDs: string[]
+  winnerFIDs: string[]
 ) {
   const account = privateKeyToAccount(env.BACKEND_PRIVATE_KEY as `0x${string}`);
   if (!account) {
@@ -38,11 +37,9 @@ export async function setGameResult(
   });
 
   if (isDraw) {
-    const partecipantsAddresses = await fetchUsersByFids(
-      partecipantsFIDs.map(Number)
-    );
+    const winnersAddresses = await fetchUsersByFids(winnerFIDs.map(Number));
 
-    if (partecipantsAddresses.length === 0) {
+    if (winnerFIDs.length === 0) {
       throw new Error("Partecipants not found");
     }
     const tx = await walletClient.writeContract({
@@ -52,7 +49,7 @@ export async function setGameResult(
       args: [
         gameId,
         ZERO_ADDRESS,
-        partecipantsAddresses.map((p) => p.verified_addresses.primary.eth_address),
+        winnersAddresses.map((p) => p.verified_addresses.primary.eth_address),
       ],
     });
 
@@ -66,7 +63,7 @@ export async function setGameResult(
       throw new Error("Transaction failed");
     }
   } else {
-    const winnerAddress = await fetchUsersByFids([Number(winnerFID)]);
+    const winnerAddress = await fetchUsersByFids([Number(winnerFIDs[0])]);
     if (winnerAddress.length === 0) {
       throw new Error("Winner not found");
     }
@@ -78,7 +75,11 @@ export async function setGameResult(
       address: SQUABBLE_CONTRACT_ADDRESS,
       abi: SQUABBLE_CONTRACT_ABI as Abi,
       functionName: "setGameWinner",
-      args: [gameId, winnerAddress[0].verified_addresses.primary.eth_address, partecipantsAddresses],
+      args: [
+        gameId,
+        winnerAddress[0].verified_addresses.primary.eth_address,
+        partecipantsAddresses,
+      ],
     });
 
     const txReceipt = await publicClient.waitForTransactionReceipt({

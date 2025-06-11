@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import { gameRoomManager } from "../game-room-manager.js";
 import { env } from "../lib/env.js";
-import { getGameParticipantWithMorePoints } from "../lib/prisma/game-participants/index.js";
+import { getGameParticipantsByGameId } from "../lib/prisma/game-participants/index.js";
 import { setGameWinner } from "../lib/prisma/games/index.js";
 import { setGameResult, startGame } from "../lib/viem/index.js";
 import { getRandomAvailableLetters } from "../lib/words.js";
@@ -54,16 +54,21 @@ export class StartGameHandler extends SocketHandler {
           title: "Game over!",
           message: "Calculating final scores and distributing rewards...",
         });
-        const winner = await getGameParticipantWithMorePoints(gameId);
-        if (!winner) {
-          console.error(`[GAME] No winner found for game ${gameId}`);
+        const participants = await getGameParticipantsByGameId(gameId);
+        const sortedParticipants = participants.sort((a, b) => b.points - a.points);
+        if (!sortedParticipants.length) {
+          console.error(`[GAME] No participants found for game ${gameId}`);
           return;
         }
+        
+        const topPoints = sortedParticipants[0].points;
+        const winners = sortedParticipants.filter(p => p.points === topPoints);
+        const isDraw = winners.length > 1;
+        const winner = winners[0];
         await setGameResult(
           room.contractGameId.toString(),
-          false,
-          winner.fid.toString(),
-          Array.from(room.players.keys()).map((key) => key.toString())
+          isDraw,
+          winners.map((p) => p.fid.toString())
         );
         await setGameWinner(gameId, winner.fid);
 
