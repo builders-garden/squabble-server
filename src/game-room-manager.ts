@@ -119,9 +119,9 @@ export class GameRoomManager {
       await this.saveToRedis(gameId, room);
 
       // Clean up empty rooms
-      if (room.players.size === 0) {
-        await this.endGame(gameId);
-      }
+      // if (room.players.size === 0) {
+      //   await this.endGame(gameId);
+      // }
     }
   }
 
