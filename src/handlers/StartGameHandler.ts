@@ -1,6 +1,7 @@
 import fetch from "node-fetch";
 import { gameRoomManager } from "../game-room-manager.js";
 import { env } from "../lib/env.js";
+import { getGameParticipantWithMorePoints } from "../lib/prisma/game-participants/index.js";
 import { setGameWinner } from "../lib/prisma/games/index.js";
 import { setGameResult, startGame } from "../lib/viem/index.js";
 import { getRandomAvailableLetters } from "../lib/words.js";
@@ -48,15 +49,16 @@ export class StartGameHandler extends SocketHandler {
       if (room.timeRemaining <= 0) {
         console.log(`[GAME] Game ${gameId} ended due to time expiration`);
         clearInterval(room.timer!);
-        const winner = Array.from(room.players.values()).sort(
-          (a, b) => b.score - a.score
-        )[0];
         this.emitToGame(gameId, "game_loading", {
           gameId,
           title: "Game over!",
           message: "Calculating final scores and distributing rewards...",
         });
-
+        const winner = await getGameParticipantWithMorePoints(gameId);
+        if (!winner) {
+          console.error(`[GAME] No winner found for game ${gameId}`);
+          return;
+        }
         await setGameResult(
           room.contractGameId.toString(),
           false,
@@ -77,7 +79,7 @@ export class StartGameHandler extends SocketHandler {
             },
             body: JSON.stringify({
               conversationId: room.conversationId,
-              message: `🎉 Congratulations ${winner.displayName}! You've won the Squabble game with ${winner.score} points! 🏆`,
+              message: `🎉 Congratulations ${winner.user.displayName}! You've won the Squabble game with ${winner.points} points! 🏆`,
             }),
           });
 

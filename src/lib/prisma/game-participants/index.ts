@@ -1,4 +1,4 @@
-import { GameParticipant } from "@prisma/client";
+import { GameParticipant, User } from "@prisma/client";
 import { prisma } from "../client.js";
 
 // Types
@@ -75,6 +75,38 @@ export async function getGameParticipantsByGameId(
     });
   } catch (error) {
     throw new Error(`Failed to get game participants: ${error}`);
+  }
+}
+
+export async function getGameParticipantWithMorePoints(
+  gameId: string
+): Promise<(GameParticipant & { user: User }) | null> {
+  return await prisma.gameParticipant.findFirst({
+    where: { gameId, points: { gt: 0 } },
+    include: {
+      user: true,
+    },
+    orderBy: {
+      points: 'desc'
+    }
+  });
+}
+
+export async function getGameWinner(
+  gameId: string,
+): Promise<GameParticipant | null> {
+  try {
+    return await prisma.gameParticipant.findFirst({
+      where: { 
+        gameId,
+        winner: true
+      },
+      include: {
+        user: true,
+      },
+    });
+  } catch (error) {
+    throw new Error(`Failed to get game winner: ${error}`);
   }
 }
 
