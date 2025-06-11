@@ -24,14 +24,20 @@ export class ConnectToLobbyHandler extends SocketHandler {
       return;
     }
 
-    this.socket.join(gameId);
-
     let room = await gameRoomManager.getGameRoom(gameId);
 
     if (!room) {
       console.log(`[LOBBY] Creating new game room ${gameId}`);
       room = await gameRoomManager.createGameRoom(gameId);
     }
+
+    if (room.players.size >= 6) {
+      console.error(`[LOBBY] Cannot join game ${gameId} because it's already full`);
+      this.socket.emit("game_full", { gameId });
+      return;
+    }
+
+    this.socket.join(gameId);
 
     await gameRoomManager.addPlayer(gameId, { ...player, socketId: this.socket.id });
 

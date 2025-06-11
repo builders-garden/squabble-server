@@ -112,7 +112,6 @@ export class StartGameHandler extends SocketHandler {
       ...player,
       availableLetters: getRandomAvailableLetters(7),
     }));
-    console.log("newPlayers", newPlayers);
     this.emitToGame(gameId, "refreshed_available_letters", {
       gameId,
       players: newPlayers,
