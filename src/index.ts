@@ -12,6 +12,7 @@ import { RemoveLetterHandler } from "./handlers/RemoveLetterHandler.js";
 import { StartGameHandler } from "./handlers/StartGameHandler.js";
 import { SubmitWordHandler } from "./handlers/SubmitWordHandler.js";
 import { PlayerLeaveHandler } from "./handlers/PlayerLeaveHandler.js";
+import { PlayerStakeRefundedHandler } from "./handlers/PlayerStakeRefundedHandlers.js";
 
 // Load environment variables
 dotenv.config();
@@ -56,6 +57,11 @@ io.on("connection", (socket) => {
   socket.on("player_stake_confirmed", ({ player, gameId, paymentHash, payerAddress }) => {
     const handler = new PlayerStakeConfirmedHandler(socket, io);
     handler.handle({ player, gameId, paymentHash, payerAddress });
+  });
+
+  socket.on("player_stake_refunded", ({ player, gameId, transactionHash }) => {
+    const handler = new PlayerStakeRefundedHandler(socket, io);
+    handler.handle({ player, gameId, transactionHash });
   });
 
   socket.on("start_game", ({ player, gameId }) => {

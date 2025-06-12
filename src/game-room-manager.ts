@@ -133,6 +133,23 @@ export class GameRoomManager {
     }
   }
 
+  public async updatePlayerStakeRefunded(gameId: string, playerFid: number): Promise<void> {
+    const room = await this.getGameRoom(gameId);
+    if (room) {
+      const player = room.players.get(playerFid);
+      if (player) {
+        player.ready = false;
+        room.players.set(playerFid, player);
+        await this.saveToRedis(gameId, room);
+        await updateGameParticipant(Number(playerFid), gameId, {
+          paid: false,
+          paymentHash: "",
+          address: "",
+        });
+      }
+    }
+  }
+
   public async updatePlayerReady(
     gameId: string,
     playerFid: number,
