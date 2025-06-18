@@ -11,6 +11,9 @@ export async function sendAgentMessage(
   console.log("externalApiUrl", externalApiUrl);
 
   try {
+    console.log("conversationId", conversationId);
+    console.log("message", message);
+    console.log("secret", env.RECEIVE_AGENT_SECRET);
     const messageResponse = await fetch(externalApiUrl, {
       method: "POST",
       headers: {
