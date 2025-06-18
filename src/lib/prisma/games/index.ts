@@ -2,8 +2,14 @@ import { GameStatus } from "@prisma/client";
 import { Game } from "@prisma/client";
 import { prisma } from "../client.js";
 
+export interface GameWithParticipants extends Game {
+  participants: {
+    fid: number;
+  }[];
+}
+
 // Get a game by ID
-export async function getGameById(id: string): Promise<Game | null> {
+export async function getGameById(id: string): Promise<GameWithParticipants | null> {
   return prisma.game.findUnique({
     where: { id },
     include: {
