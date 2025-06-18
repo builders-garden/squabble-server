@@ -100,7 +100,7 @@ export class GameRoomManager {
       if (gameParticipant) {
         player.ready = isPaidGame ? gameParticipant.paid : true;
       }
-      if (!isPaidGame) {
+      if (!isPaidGame && !player.ready) {
         player.ready = true;
         console.log("player", player);
         console.log("room.conversationId", room.conversationId);
