@@ -1,5 +1,6 @@
 import { GameStatus } from "@prisma/client";
 import { GameRoom, Player } from "./interfaces.js";
+import { sendAgentMessage } from "./lib/agent/api.js";
 import {
   createGameParticipant,
   getGameParticipantByFidAndGameId,
@@ -9,7 +10,6 @@ import {
 import { getGameById, updateGame } from "./lib/prisma/games/index.js";
 import { redisClient } from "./lib/redis/index.js";
 import { getRandomWord } from "./lib/words.js";
-import { sendAgentMessage } from "./lib/agent/api.js";
 
 export class GameRoomManager {
   private static instance: GameRoomManager;
@@ -90,20 +90,36 @@ export class GameRoomManager {
     return room;
   }
 
-  public async addPlayer(gameId: string, player: Player, isPaidGame: boolean): Promise<void> {
+  public async addPlayer(
+    gameId: string,
+    player: Player,
+    isPaidGame: boolean
+  ): Promise<void> {
     const room = await this.getGameRoom(gameId);
     if (room) {
       const gameParticipant = await getGameParticipantByFidAndGameId(
         player.fid,
         gameId
       );
+      const isPlayerAlreadyReady = gameParticipant?.paid || player.ready;
       if (gameParticipant) {
         player.ready = isPaidGame ? gameParticipant.paid : true;
       }
       if (!isPaidGame && !player.ready) {
         player.ready = true;
-        console.log("player", player);
-        console.log("room.conversationId", room.conversationId);
+      }
+
+      room.players.set(player.fid, player);
+      await this.saveToRedis(gameId, room);
+      await createGameParticipant({
+        fid: Number(player.fid),
+        gameId,
+        joined: gameParticipant?.joined || true,
+        paid: gameParticipant?.paid || false,
+        winner: gameParticipant?.winner || false,
+        paymentHash: gameParticipant?.paymentHash || "",
+      });
+      if (isPlayerAlreadyReady !== player.ready) {
         try {
           console.log("Sending player joined message to agent");
           const messageResponse = await sendAgentMessage(
@@ -119,17 +135,6 @@ export class GameRoomManager {
           console.error("Error sending player joined message:", error);
         }
       }
-
-      room.players.set(player.fid, player);
-      await this.saveToRedis(gameId, room);
-      await createGameParticipant({
-        fid: Number(player.fid),
-        gameId,
-        joined: gameParticipant?.joined || true,
-        paid: gameParticipant?.paid || false,
-        winner: gameParticipant?.winner || false,
-        paymentHash: gameParticipant?.paymentHash || "",
-      });
     }
   }
 
@@ -151,7 +156,10 @@ export class GameRoomManager {
     }
   }
 
-  public async updatePlayerStakeRefunded(gameId: string, playerFid: number): Promise<void> {
+  public async updatePlayerStakeRefunded(
+    gameId: string,
+    playerFid: number
+  ): Promise<void> {
     const room = await this.getGameRoom(gameId);
     if (room) {
       const player = room.players.get(playerFid);
@@ -185,7 +193,7 @@ export class GameRoomManager {
         await updateGameParticipant(Number(playerFid), gameId, {
           paid: true,
           paymentHash,
-          address
+          address,
         });
       }
     }
