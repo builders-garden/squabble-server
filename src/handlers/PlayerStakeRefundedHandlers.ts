@@ -1,8 +1,9 @@
 import { gameRoomManager } from "../game-room-manager.js";
+import { sendAgentMessage } from "../lib/agent/api.js";
 import { SocketHandler } from "./SocketHandler.js";
 
 interface PlayerStakeRefundedData {
-  player: { fid: number };
+  player: { fid: number, username: string };
   gameId: string;
   transactionHash: string;
 }
@@ -18,6 +19,19 @@ export class PlayerStakeRefundedHandler extends SocketHandler {
       this.emitToGame(gameId, "game_update", {
         players: Array.from(room.players.values()),
       });
+      try {
+        const messageResponse = await sendAgentMessage(
+          "/api/send-message",
+          room.conversationId,
+          `😢 ${player.username} exit from the game and has been refunded.`
+        );
+        if (!messageResponse) {
+          console.error("Failed to send player stake refunded message");
+          throw new Error("Failed to send player stake refunded message");
+        }
+      } catch (error) {
+        console.error("Error sending player stake refunded message:", error);
+      }
     }
   }
 }

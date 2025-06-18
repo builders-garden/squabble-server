@@ -8,6 +8,7 @@ import { getRandomAvailableLetters } from "../lib/words.js";
 import { SocketHandler } from "./SocketHandler.js";
 import { GameStatus } from "@prisma/client";
 import { GAME_DURATION } from "../lib/constants.js";
+import { sendAgentMessage } from "../lib/agent/api.js";
 
 const appUrl = env.NEXT_PUBLIC_AGENT_URL;
 
@@ -85,30 +86,17 @@ export class StartGameHandler extends SocketHandler {
         );
         await setGameWinner(gameId, winner.fid);
 
-        //send message to winner
         try {
-          const externalApiUrl = `${appUrl}/api/send-message`;
-
-          const messageResponse = await fetch(externalApiUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "x-agent-secret": env.RECEIVE_AGENT_SECRET,
-            },
-            body: JSON.stringify({
-              conversationId: room.conversationId,
-              message: isDraw 
-                ? `🎯 It's a draw! Multiple players tied with ${winner.points} points! The prize will be split between: ${winners.map(w => w.user.displayName).join(', ')} 🤝`
-                : `🎉 Congratulations ${winner.user.displayName}! You've won the Squabble game with ${winner.points} points! 🏆`,
-            }),
-          });
-
-          if (!messageResponse.ok) {
-            console.error(
-              `Failed to send winner message: ${messageResponse.status} ${messageResponse.statusText}`
-            );
+          const messageResponse = await sendAgentMessage(
+            "/api/send-message",
+            room.conversationId,
+            isDraw ?
+            `🎯 It's a draw! Multiple players tied with ${winner.points} points! The prize will be split between: ${winners.map(w => w.user.displayName).join(', ')} 🤝`
+            : `🎉 Congratulations ${winner.user.displayName}! You've won the Squabble game with ${winner.points} points! 🏆`
+          );
+          if (!messageResponse) {
+            console.error("Failed to send winner message");
             throw new Error("Failed to send winner message");
-          } else {
           }
         } catch (error) {
           console.error("Error sending winner message:", error);

@@ -9,6 +9,7 @@ import {
 import { getGameById, updateGame } from "./lib/prisma/games/index.js";
 import { redisClient } from "./lib/redis/index.js";
 import { getRandomWord } from "./lib/words.js";
+import { sendAgentMessage } from "./lib/agent/api.js";
 
 export class GameRoomManager {
   private static instance: GameRoomManager;
@@ -101,7 +102,21 @@ export class GameRoomManager {
       }
       if (!isPaidGame) {
         player.ready = true;
+        try {
+          const messageResponse = await sendAgentMessage(
+            "/api/send-message",
+            room.conversationId,
+            `🎉 ${player.username} joined the game!`
+          );
+          if (!messageResponse) {
+            console.error("Failed to send player joined message");
+            throw new Error("Failed to send player joined message");
+          }
+        } catch (error) {
+          console.error("Error sending player joined message:", error);
+        }
       }
+
       room.players.set(player.fid, player);
       await this.saveToRedis(gameId, room);
       await createGameParticipant({
