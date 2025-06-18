@@ -119,7 +119,7 @@ export class GameRoomManager {
         winner: gameParticipant?.winner || false,
         paymentHash: gameParticipant?.paymentHash || "",
       });
-      if (isPlayerAlreadyReady !== player.ready) {
+      if (isPlayerAlreadyReady !== player.ready && !isPaidGame) {
         try {
           console.log("Sending player joined message to agent");
           const messageResponse = await sendAgentMessage(
