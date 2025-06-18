@@ -119,22 +119,6 @@ export class GameRoomManager {
         winner: gameParticipant?.winner || false,
         paymentHash: gameParticipant?.paymentHash || "",
       });
-      if (isPlayerAlreadyReady !== player.ready && !isPaidGame) {
-        try {
-          console.log("Sending player joined message to agent");
-          const messageResponse = await sendAgentMessage(
-            "/api/send-message",
-            room.conversationId,
-            `🎉 ${player.username} joined the game!`
-          );
-          if (!messageResponse) {
-            console.error("Failed to send player joined message");
-            throw new Error("Failed to send player joined message");
-          }
-        } catch (error) {
-          console.error("Error sending player joined message:", error);
-        }
-      }
     }
   }
 
