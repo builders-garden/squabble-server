@@ -23,7 +23,7 @@ export class PlayerStakeRefundedHandler extends SocketHandler {
         const messageResponse = await sendAgentMessage(
           "/api/send-message",
           room.conversationId,
-          `😢 ${player.username} exit from the game and has been refunded.`
+          `😢 ${player.username} left the game and has been refunded.`
         );
         if (!messageResponse) {
           console.error("Failed to send player stake refunded message");
