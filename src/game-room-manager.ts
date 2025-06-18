@@ -30,6 +30,7 @@ export class GameRoomManager {
 
   private async saveToRedis(gameId: string, room: GameRoom): Promise<void> {
     const serializedRoom = JSON.stringify({
+      ...room,
       players: Array.from(room.players.entries()),
       board: room.board,
       timeRemaining: room.timeRemaining,
