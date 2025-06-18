@@ -103,6 +103,7 @@ export class GameRoomManager {
       if (!isPaidGame) {
         player.ready = true;
         try {
+          console.log("Sending player joined message to agent");
           const messageResponse = await sendAgentMessage(
             "/api/send-message",
             room.conversationId,
