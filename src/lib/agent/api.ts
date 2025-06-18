@@ -8,13 +8,7 @@ export async function sendAgentMessage(
   const appUrl = env.NEXT_PUBLIC_AGENT_URL;
   const externalApiUrl = `${appUrl}${endpoint}`;
 
-  console.log("externalApiUrl", externalApiUrl);
-
   try {
-    console.log("externalApiUrl", externalApiUrl);
-
-    console.log("conversationId", conversationId);
-    console.log("message", message);
     const messageResponse = await fetch(externalApiUrl, {
       method: "POST",
       headers: {
@@ -26,10 +20,6 @@ export async function sendAgentMessage(
         message,
       }),
     });
-    console.log("conversationId", conversationId);
-    console.log("message", message);
-
-    console.log("messageResponse", await messageResponse.json());
 
     if (!messageResponse.ok) {
       throw new Error(`HTTP error! status: ${messageResponse.status}`);
