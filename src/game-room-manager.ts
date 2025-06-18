@@ -102,6 +102,8 @@ export class GameRoomManager {
       }
       if (!isPaidGame) {
         player.ready = true;
+        console.log("player", player);
+        console.log("room.conversationId", room.conversationId);
         try {
           console.log("Sending player joined message to agent");
           const messageResponse = await sendAgentMessage(
