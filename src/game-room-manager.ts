@@ -1,6 +1,5 @@
 import { GameStatus } from "@prisma/client";
 import { GameRoom, Player } from "./interfaces.js";
-import { sendAgentMessage } from "./lib/agent/api.js";
 import {
   createGameParticipant,
   getGameParticipantByFidAndGameId,
@@ -30,10 +29,11 @@ export class GameRoomManager {
 
   private async saveToRedis(gameId: string, room: GameRoom): Promise<void> {
     const serializedRoom = JSON.stringify({
-      ...room,
       players: Array.from(room.players.entries()),
       board: room.board,
       timeRemaining: room.timeRemaining,
+      contractGameId: room.contractGameId,
+      conversationId: room.conversationId,
     });
     await redisClient.setEx(
       `${this.REDIS_PREFIX}${gameId}`,
