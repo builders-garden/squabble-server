@@ -127,3 +127,42 @@ export const getTransactionReceipt = async (hash: `0x${string}`) => {
 
   return await publicClient.getTransactionReceipt({ hash });
 };
+
+export const joinGame = async (gameId: string, playerAddress: `0x${string}`) => {
+  const account = privateKeyToAccount(env.BACKEND_PRIVATE_KEY as `0x${string}`);
+  if (!account) {
+    throw new Error("No account found");
+  }
+
+  const walletClient = createWalletClient({
+    chain: base,
+    transport: http(),
+    account: account,
+  });
+
+  if (!account) {
+    throw new Error("No account found");
+  }
+
+  const publicClient = createPublicClient({
+    chain: base,
+    transport: http(),
+  });
+
+  const tx = await walletClient.writeContract({
+    address: SQUABBLE_CONTRACT_ADDRESS,
+    abi: SQUABBLE_CONTRACT_ABI as Abi,
+    functionName: "joinGame",
+    args: [gameId, playerAddress],
+  });
+
+  const txReceipt = await publicClient.waitForTransactionReceipt({
+    hash: tx,
+  });
+
+  if (txReceipt.status === "success") {
+    return txReceipt;
+  } else {
+    throw new Error("Transaction failed");
+  }
+};

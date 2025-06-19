@@ -7,6 +7,7 @@ export interface Player {
   ready: boolean;
   score: number;
   board: string[][];
+  address: `0x${string}`;
 }
 
 export interface GameRoom {

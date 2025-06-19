@@ -39,7 +39,7 @@ export class ConnectToLobbyHandler extends SocketHandler {
 
     this.socket.join(gameId);
 
-    await gameRoomManager.addPlayer(gameId, { ...player, socketId: this.socket.id }, game.betAmount > 0);
+    await gameRoomManager.addPlayer(gameId, game.contractGameId!, { ...player, socketId: this.socket.id }, game.betAmount > 0);
 
     console.log(`[LOBBY] Player ${player.fid} joined game ${gameId}`);
     this.emitToGame(gameId, "player_joined", { player });
