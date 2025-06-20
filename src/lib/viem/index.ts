@@ -128,7 +128,7 @@ export const getTransactionReceipt = async (hash: `0x${string}`) => {
   return await publicClient.getTransactionReceipt({ hash });
 };
 
-export const joinGame = async (gameId: string, playerAddress: `0x${string}`) => {
+export const joinGame = async (gameContractId: number, playerAddress: `0x${string}`) => {
   const account = privateKeyToAccount(env.BACKEND_PRIVATE_KEY as `0x${string}`);
   if (!account) {
     throw new Error("No account found");
@@ -153,7 +153,7 @@ export const joinGame = async (gameId: string, playerAddress: `0x${string}`) => 
     address: SQUABBLE_CONTRACT_ADDRESS,
     abi: SQUABBLE_CONTRACT_ABI as Abi,
     functionName: "joinGame",
-    args: [gameId, playerAddress],
+    args: [gameContractId, playerAddress],
   });
 
   const txReceipt = await publicClient.waitForTransactionReceipt({

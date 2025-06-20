@@ -115,7 +115,7 @@ export class GameRoomManager {
 
       room.players.set(player.fid, player);
       if (!playerAlreadyJoined) {
-        await joinGame(gameId, player.address);
+        await joinGame(gameContractId, player.address);
       }
       await this.saveToRedis(gameId, room);
       await createGameParticipant({
