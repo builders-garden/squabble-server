@@ -108,7 +108,7 @@ export class GameRoomManager {
       let address = player.address;
       if (!address && !isPaidGame) {
         const neynarUser = await fetchUsersByFids([player.fid]);
-        address = neynarUser[0].verified_addresses.eth_addresses[0] as `0x${string}`;
+        address = neynarUser[0].verified_addresses.primary.eth_address as `0x${string}`;
       }
       const playerAlreadyJoined = gameParticipant?.address === address;
       const isPlayerAlreadyReady = gameParticipant?.paid || player.ready;
