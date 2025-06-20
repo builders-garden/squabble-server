@@ -31,7 +31,7 @@ export class GameRoomManager {
 
   private async saveToRedis(gameId: string, room: GameRoom): Promise<void> {
     const serializedRoom = JSON.stringify({
-      players: Array.from(room.players.values()),
+      players: Array.from(room.players.entries()),
       board: room.board,
       timeRemaining: room.timeRemaining,
       contractGameId: room.contractGameId,
@@ -51,9 +51,25 @@ export class GameRoomManager {
     if (!serializedRoom) return null;
 
     const parsedRoom = JSON.parse(serializedRoom);
+
+    // Safely reconstruct the players Map
+    let players: Map<number, any> = new Map();
+    if (parsedRoom.players && Array.isArray(parsedRoom.players)) {
+      try {
+        // Filter out any null or invalid entries
+        const validEntries = parsedRoom.players.filter(Boolean);
+        players = new Map(validEntries);
+      } catch (error) {
+        console.warn(
+          `Failed to reconstruct players Map for game ${gameId}:`,
+          error
+        );
+        players = new Map();
+      }
+    }
+
     return {
-      players:
-        parsedRoom.players.length > 0 ? new Map(parsedRoom.players) : new Map(),
+      players,
       board: parsedRoom.board,
       timer: null,
       timeRemaining: parsedRoom.timeRemaining,
