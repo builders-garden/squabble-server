@@ -10,6 +10,7 @@ import {
 import { getGameById, updateGame } from "./lib/prisma/games/index.js";
 import { redisClient } from "./lib/redis/index.js";
 import { getRandomWord } from "./lib/words.js";
+import { joinGame } from "./lib/viem/index.js";
 
 export class GameRoomManager {
   private static instance: GameRoomManager;
@@ -133,7 +134,7 @@ export class GameRoomManager {
           gameContractId,
           address,
         });
-        // await joinGame(gameContractId, address);
+        await joinGame(gameContractId, address);
       }
       await this.saveToRedis(gameId, room);
       await createGameParticipant({
