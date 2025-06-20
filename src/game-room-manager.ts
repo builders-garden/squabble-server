@@ -114,7 +114,7 @@ export class GameRoomManager {
       }
 
       room.players.set(player.fid, player);
-      if (!playerAlreadyJoined) {
+      if (!playerAlreadyJoined && !isPaidGame) {
         await joinGame(gameContractId, player.address || "0x0000000000000000000000000000000000000000");
       }
       await this.saveToRedis(gameId, room);
