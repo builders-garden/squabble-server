@@ -10,6 +10,7 @@ import { getGameById, updateGame } from "./lib/prisma/games/index.js";
 import { redisClient } from "./lib/redis/index.js";
 import { getRandomWord } from "./lib/words.js";
 import { joinGame } from "./lib/viem/index.js";
+import { zeroAddress } from "viem";
 
 export class GameRoomManager {
   private static instance: GameRoomManager;
@@ -115,7 +116,7 @@ export class GameRoomManager {
 
       room.players.set(player.fid, player);
       if (!playerAlreadyJoined && !isPaidGame) {
-        await joinGame(gameContractId, player.address || "0x0000000000000000000000000000000000000000");
+        await joinGame(gameContractId, player.address || zeroAddress);
       }
       await this.saveToRedis(gameId, room);
       await createGameParticipant({
