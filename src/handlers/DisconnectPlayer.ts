@@ -35,7 +35,7 @@ export class DisconnectPlayerHandler extends SocketHandler {
       // Find and remove the player with matching socketId
       for (const [fid, player] of gameRoom.players.entries()) {
         console.log(
-          `[CONNECTION] Disconnecting player: ${player.socketId} from game: ${gameRoom}`
+          `[CONNECTION] Disconnecting player: ${player?.socketId} from game: ${gameRoom}`
         );
         if (player.socketId === socketId) {
           // Use GameRoomManager to remove the player
