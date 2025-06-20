@@ -175,13 +175,13 @@ export class GameRoomManager {
       const player = room.players.get(playerFid);
       if (player) {
         player.ready = false;
-        room.players.set(playerFid, player);
-        await this.saveToRedis(gameId, room);
         await updateGameParticipant(Number(playerFid), gameId, {
           paid: false,
           paymentHash: "",
           address: "",
         });
+        room.players.set(playerFid, player);
+        await this.saveToRedis(gameId, room);
       }
     }
   }
@@ -198,13 +198,13 @@ export class GameRoomManager {
       const player = room.players.get(playerFid);
       if (player) {
         player.ready = ready;
-        room.players.set(playerFid, player);
-        await this.saveToRedis(gameId, room);
         await updateGameParticipant(Number(playerFid), gameId, {
           paid: true,
           paymentHash,
           address,
         });
+        room.players.set(playerFid, player);
+        await this.saveToRedis(gameId, room);
       }
     }
   }
