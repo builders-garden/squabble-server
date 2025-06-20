@@ -9,8 +9,8 @@ import {
 } from "./lib/prisma/game-participants/index.js";
 import { getGameById, updateGame } from "./lib/prisma/games/index.js";
 import { redisClient } from "./lib/redis/index.js";
-import { getRandomWord } from "./lib/words.js";
 import { joinGame } from "./lib/viem/index.js";
+import { getRandomWord } from "./lib/words.js";
 
 export class GameRoomManager {
   private static instance: GameRoomManager;
@@ -52,7 +52,8 @@ export class GameRoomManager {
 
     const parsedRoom = JSON.parse(serializedRoom);
     return {
-      players: new Map(parsedRoom.players),
+      players:
+        parsedRoom.players.length > 0 ? new Map(parsedRoom.players) : new Map(),
       board: parsedRoom.board,
       timer: null,
       timeRemaining: parsedRoom.timeRemaining,
@@ -117,8 +118,7 @@ export class GameRoomManager {
         playerFid: player.fid,
       });
       const playerAlreadyJoined =
-        !!gameParticipant ||
-        room.players.get(player.fid)?.fid === player.fid;
+        !!gameParticipant || room.players.get(player.fid)?.fid === player.fid;
       const isPlayerAlreadyReady = gameParticipant?.paid || player.ready;
       if (gameParticipant) {
         player.ready = isPaidGame ? gameParticipant.paid : true;
