@@ -106,7 +106,7 @@ export class GameRoomManager {
         gameId
       );
       let address = player.address;
-      if (!address) {
+      if (!address && !isPaidGame) {
         const neynarUser = await fetchUsersByFids([player.fid]);
         address = neynarUser[0].verified_addresses.eth_addresses[0] as `0x${string}`;
       }
