@@ -108,7 +108,8 @@ export class GameRoomManager {
       let address = player.address;
       if (!address && !isPaidGame) {
         const neynarUser = await fetchUsersByFids([player.fid]);
-        address = neynarUser[0].verified_addresses.primary.eth_address as `0x${string}`;
+        address = neynarUser[0].verified_addresses.primary
+          .eth_address as `0x${string}`;
       }
       const playerAlreadyJoined = gameParticipant?.address === address;
       const isPlayerAlreadyReady = gameParticipant?.paid || player.ready;
@@ -121,6 +122,11 @@ export class GameRoomManager {
 
       room.players.set(player.fid, player);
       if (!playerAlreadyJoined && !isPaidGame) {
+        console.log("joining game", {
+          player: player.fid,
+          gameContractId,
+          address,
+        });
         await joinGame(gameContractId, address);
       }
       await this.saveToRedis(gameId, room);
