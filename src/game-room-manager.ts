@@ -9,7 +9,6 @@ import {
 } from "./lib/prisma/game-participants/index.js";
 import { getGameById, updateGame } from "./lib/prisma/games/index.js";
 import { redisClient } from "./lib/redis/index.js";
-import { joinGame } from "./lib/viem/index.js";
 import { getRandomWord } from "./lib/words.js";
 
 export class GameRoomManager {
@@ -150,7 +149,7 @@ export class GameRoomManager {
           gameContractId,
           address,
         });
-        await joinGame(gameContractId, address);
+        // await joinGame(gameContractId, address);
       }
       await this.saveToRedis(gameId, room);
       await createGameParticipant({
@@ -344,7 +343,7 @@ export class GameRoomManager {
     const room = await this.getGameRoom(gameId);
     if (room) {
       room.players.forEach((player, fid) => {
-        if (player.socketId === socketId) {
+        if (player?.socketId === socketId) {
           this.removePlayer(gameId, fid);
         }
       });
