@@ -117,7 +117,7 @@ export class GameRoomManager {
         playerFid: player.fid,
       });
       const playerAlreadyJoined =
-        gameParticipant?.address === address ||
+        !!gameParticipant ||
         room.players.get(player.fid)?.fid === player.fid;
       const isPlayerAlreadyReady = gameParticipant?.paid || player.ready;
       if (gameParticipant) {
