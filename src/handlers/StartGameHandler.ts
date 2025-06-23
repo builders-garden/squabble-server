@@ -102,9 +102,15 @@ export class StartGameHandler extends SocketHandler {
           console.error("Error sending winner message:", error);
         }
 
+        const updatedRoom = await gameRoomManager.getGameRoom(gameId);
+        if (!updatedRoom) {
+          console.error(`[GAME] Game room not found for game ${gameId}`);
+          return;
+        }
+
         this.emitToGame(gameId, "game_ended", {
           gameId,
-          players: Array.from(room.players.values()),
+          players: Array.from(updatedRoom.players.values()),
         });
         // Clear the interval again after game ended event
         clearInterval(room.timer!);

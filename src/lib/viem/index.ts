@@ -13,7 +13,6 @@ import {
   ZERO_ADDRESS,
 } from "../constants.js";
 import { env } from "../env.js";
-import { fetchUsersByFids } from "../neynar/index.js";
 
 export async function setGameResult(
   gameId: string,
@@ -41,11 +40,7 @@ export async function setGameResult(
       address: SQUABBLE_CONTRACT_ADDRESS,
       abi: SQUABBLE_CONTRACT_ABI as Abi,
       functionName: "setGameWinner",
-      args: [
-        gameId,
-        ZERO_ADDRESS,
-        winnersAddresses,
-      ],
+      args: [gameId, ZERO_ADDRESS, winnersAddresses],
     });
 
     const txReceipt = await publicClient.waitForTransactionReceipt({
@@ -65,11 +60,7 @@ export async function setGameResult(
       address: SQUABBLE_CONTRACT_ADDRESS,
       abi: SQUABBLE_CONTRACT_ABI as Abi,
       functionName: "setGameWinner",
-      args: [
-        gameId,
-        winnersAddresses[0],
-        partecipantsAddresses,
-      ],
+      args: [gameId, winnersAddresses[0], partecipantsAddresses],
     });
 
     const txReceipt = await publicClient.waitForTransactionReceipt({
@@ -128,7 +119,10 @@ export const getTransactionReceipt = async (hash: `0x${string}`) => {
   return await publicClient.getTransactionReceipt({ hash });
 };
 
-export const joinGame = async (gameContractId: number, playerAddress: `0x${string}`) => {
+export const joinGame = async (
+  gameContractId: number,
+  playerAddress: `0x${string}`
+) => {
   const account = privateKeyToAccount(env.BACKEND_PRIVATE_KEY as `0x${string}`);
   if (!account) {
     throw new Error("No account found");
@@ -140,29 +134,43 @@ export const joinGame = async (gameContractId: number, playerAddress: `0x${strin
     account: account,
   });
 
-  if (!account) {
-    throw new Error("No account found");
-  }
-
   const publicClient = createPublicClient({
     chain: base,
     transport: http(),
   });
 
-  const tx = await walletClient.writeContract({
-    address: SQUABBLE_CONTRACT_ADDRESS,
-    abi: SQUABBLE_CONTRACT_ABI as Abi,
-    functionName: "joinGame",
-    args: [gameContractId, playerAddress],
-  });
+  try {
+    // Get the current nonce for the account
+    const nonce = await publicClient.getTransactionCount({
+      address: account.address,
+    });
 
-  const txReceipt = await publicClient.waitForTransactionReceipt({
-    hash: tx,
-  });
+    const tx = await walletClient.writeContract({
+      address: SQUABBLE_CONTRACT_ADDRESS,
+      abi: SQUABBLE_CONTRACT_ABI as Abi,
+      functionName: "joinGame",
+      args: [gameContractId, playerAddress],
+      nonce: nonce,
+    });
 
-  if (txReceipt.status === "success") {
-    return txReceipt;
-  } else {
-    throw new Error("Transaction failed");
+    const txReceipt = await publicClient.waitForTransactionReceipt({
+      hash: tx,
+    });
+
+    if (txReceipt.status === "success") {
+      console.log("joinGame txReceipt", txReceipt);
+      return txReceipt;
+    } else {
+      throw new Error("Transaction failed");
+    }
+  } catch (error) {
+    console.error("joinGame error", error);
+    if (
+      error instanceof Error &&
+      error.message.includes("GameAlreadyHasPlayer()")
+    ) {
+      return null;
+    }
+    throw error; // Re-throw the original error instead of generic "Transaction failed"
   }
 };
