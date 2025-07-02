@@ -35,12 +35,18 @@ export async function setGameResult(
     account: account,
   });
 
+  // Get the current nonce for the account
+  const nonce = await publicClient.getTransactionCount({
+    address: account.address,
+  });
+
   if (isDraw) {
     const tx = await walletClient.writeContract({
       address: SQUABBLE_CONTRACT_ADDRESS,
       abi: SQUABBLE_CONTRACT_ABI as Abi,
       functionName: "setGameWinner",
       args: [gameId, ZERO_ADDRESS, winnersAddresses],
+      nonce: nonce,
     });
 
     const txReceipt = await publicClient.waitForTransactionReceipt({
@@ -61,6 +67,7 @@ export async function setGameResult(
       abi: SQUABBLE_CONTRACT_ABI as Abi,
       functionName: "setGameWinner",
       args: [gameId, winnersAddresses[0], partecipantsAddresses],
+      nonce: nonce,
     });
 
     const txReceipt = await publicClient.waitForTransactionReceipt({
@@ -92,11 +99,17 @@ export async function startGame(gameId: string) {
     account: account,
   });
 
+  // Get the current nonce for the account
+  const nonce = await publicClient.getTransactionCount({
+    address: account.address,
+  });
+
   const tx = await walletClient.writeContract({
     address: SQUABBLE_CONTRACT_ADDRESS,
     abi: SQUABBLE_CONTRACT_ABI as Abi,
     functionName: "startGame",
     args: [gameId],
+    nonce: nonce,
   });
 
   const txReceipt = await publicClient.waitForTransactionReceipt({
