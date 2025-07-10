@@ -128,14 +128,8 @@ export class GameRoomManager {
         address = neynarUser[0].verified_addresses.primary
           .eth_address as `0x${string}`;
       }
-      console.log("gameParticipant", {
-        gameParticipant,
-        roomPlayer: room.players.get(player.fid),
-        playerFid: player.fid,
-      });
       const playerAlreadyJoined =
         gameParticipant?.joined || room.players.get(player.fid)?.fid === player.fid;
-      const isPlayerAlreadyReady = gameParticipant?.paid || player.ready;
       if (gameParticipant) {
         player.ready = isPaidGame ? gameParticipant.paid : true;
       }

@@ -66,7 +66,7 @@ export class ConnectToLobbyHandler extends SocketHandler {
       }
     }
 
-    if (room.players.size >= 6) {
+    if (room.players.size >= 6 && !room.players.has(player.fid)) {
       console.error(
         `[LOBBY] Cannot join game ${gameId} because it's already full`
       );
@@ -99,6 +99,7 @@ export class ConnectToLobbyHandler extends SocketHandler {
     this.emitToGame(gameId, "game_update", {
       players: Array.from(room.players.values()),
     });
+
     console.log(`[LOBBY] Game events emitted successfully`);
   }
 }
