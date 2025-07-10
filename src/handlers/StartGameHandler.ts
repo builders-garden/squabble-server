@@ -1,11 +1,12 @@
 import { GameStatus } from "@prisma/client";
 import { gameRoomManager } from "../game-room-manager.js";
 import { sendAgentMessage } from "../lib/agent/api.js";
-import { GAME_DURATION } from "../lib/constants.js";
+import { END_GAME_MESSAGE, GAME_DURATION } from "../lib/constants.js";
 import { env } from "../lib/env.js";
 import { getGameParticipantsByGameId } from "../lib/prisma/game-participants/index.js";
 import {
   getGameById,
+  getStakedPlayersCount,
   setGameWinner,
   updateGame,
 } from "../lib/prisma/games/index.js";
@@ -28,6 +29,7 @@ export class StartGameHandler extends SocketHandler {
     if (!room) return;
 
     const game = await getGameById(gameId);
+    const stakedPlayersCount = await getStakedPlayersCount(gameId);
 
     const players = Array.from(room.players.values());
     const readyPlayers = players.filter((player) => player.ready);
@@ -104,10 +106,17 @@ export class StartGameHandler extends SocketHandler {
                 isDraw
                   ? `🎯 It's a draw! Multiple players tied with ${
                       winner.points
-                    } points! The prize will be split between: ${winners
-                      .map((w) => w.user.displayName)
-                      .join(", ")} 🤝`
-                  : `🎉 Congratulations ${winner.user.displayName}! You've won the Squabble game with ${winner.points} points! 🏆`
+                    } points!${
+                      typeof game?.betAmount === "number" && game.betAmount > 0
+                        ? ` The buy-in of ${game.betAmount} USDC will be sent back to: ${winners
+                            .map((w) => w.user.displayName)
+                            .join(", ")} 🤝`
+                        : ""
+                    }`
+                  : `🎉 Congratulations ${winner.user.displayName}! You've won the Squabble game with ${winner.points} points! 🏆` +
+                    (typeof game?.betAmount === "number" && game.betAmount > 0
+                      ? `\nThe total buy-in of ${game.betAmount * stakedPlayersCount} USDC will be sent to you!`
+                      : "")
               );
               if (!messageResponse) {
                 console.error("Failed to send winner message");
@@ -115,6 +124,19 @@ export class StartGameHandler extends SocketHandler {
               }
             } catch (error) {
               console.error("Error sending winner message:", error);
+            }
+            try {
+              const messageResponse = await sendAgentMessage(
+                "/api/send-message",
+                room.conversationId,
+                END_GAME_MESSAGE
+              );
+              if (!messageResponse) {
+                console.error("Failed to send END_GAME_MESSAGE message");
+                throw new Error("Failed to send END_GAME_MESSAGE message");
+              }
+            } catch (error) {
+              console.error("Error sending END_GAME_MESSAGE message:", error);
             }
           }
 

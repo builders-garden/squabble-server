@@ -99,3 +99,21 @@ export async function setGameWinner(gameId: string, winnerFid: number): Promise<
     })
   ]).then(([game]) => game);
 }
+
+export async function getStakedPlayersCount(gameId: string): Promise<number> {
+  const game = await prisma.game.findUnique({
+    where: { id: gameId },
+    select: { betAmount: true },
+  });
+
+  if (!game || game.betAmount === 0) {
+    return 0;
+  }
+
+  return prisma.gameParticipant.count({
+    where: {
+      gameId: gameId,
+      paid: true,
+    },
+  });
+}

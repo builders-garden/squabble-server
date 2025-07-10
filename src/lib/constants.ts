@@ -687,3 +687,11 @@ export const SQUABBLE_CONTRACT_ABI = [
     type: "function",
   },
 ] as const;
+
+export const END_GAME_MESSAGE = `😮‍💨 And that’s a wrap!
+Words were made, friendships were tested.
+
+Wanna go again?
+Reply to this message or tag @squabble.base.eth to start a new match — same chaos, fresh grid. 🧩🔥
+
+Or… walk away while you're still on top 😏`;
