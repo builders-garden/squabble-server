@@ -225,7 +225,7 @@ export class GameRoomManager {
 
 	public async updateBoard(
 		gameId: string,
-		playerFid: number,
+		_playerFid: number,
 		word: string,
 		path: { x: number; y: number }[],
 	): Promise<string[][]> {
