@@ -4,7 +4,7 @@
   "main": "src/index.ts",
   "license": "MIT",
   "engines": {
-    "node": ">=18"
+    "node": "20"
   },
   "packageManager": "pnpm@10.15.1",
   "scripts": {
