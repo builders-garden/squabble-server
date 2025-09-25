@@ -1,19 +1,19 @@
 import { GameStatus } from "@prisma/client";
-import { gameRoomManager } from "../game-room-manager";
-import { sendAgentMessage } from "../lib/agent/api";
-import { END_GAME_MESSAGE, GAME_DURATION } from "../lib/constants";
-import { getGameParticipantsByGameId } from "../lib/prisma/game-participants/index";
+import { gameRoomManager } from "../game-room-manager.js";
+import { sendAgentMessage } from "../lib/agent/api.js";
+import { END_GAME_MESSAGE, GAME_DURATION } from "../lib/constants.js";
+import { getGameParticipantsByGameId } from "../lib/prisma/game-participants/index.js";
 import {
 	getGameById,
 	getStakedPlayersCount,
 	setGameWinner,
 	updateGame,
-} from "../lib/prisma/games/index";
-import { setGameResult, startGame } from "../lib/viem/index";
-import { getRandomAvailableLetters } from "../lib/words";
-import type { StartGameEvent } from "../types";
-import { ServerToClientSocketEvents } from "../types/socket/socket.enum";
-import { SocketHandler } from "./SocketHandler";
+} from "../lib/prisma/games/index.js";
+import { setGameResult, startGame } from "../lib/viem/index.js";
+import { getRandomAvailableLetters } from "../lib/words.js";
+import type { StartGameEvent } from "../types/index.js";
+import { ServerToClientSocketEvents } from "../types/socket/socket.enum.js";
+import { SocketHandler } from "./SocketHandler.js";
 
 export class StartGameHandler extends SocketHandler {
 	async handle({ player, gameId }: StartGameEvent) {

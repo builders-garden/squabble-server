@@ -1,7 +1,7 @@
-import { gameRoomManager } from "../game-room-manager";
-import type { RemoveLetterEvent } from "../types";
-import { ServerToClientSocketEvents } from "../types/socket/socket.enum";
-import { SocketHandler } from "./SocketHandler";
+import { gameRoomManager } from "../game-room-manager.js";
+import type { RemoveLetterEvent } from "../types/index.js";
+import { ServerToClientSocketEvents } from "../types/socket/socket.enum.js";
+import { SocketHandler } from "./SocketHandler.js";
 
 export class RemoveLetterHandler extends SocketHandler {
 	async handle({ player, gameId, x, y }: RemoveLetterEvent) {

@@ -1,5 +1,5 @@
 import ky from "ky";
-import { env } from "../env";
+import { env } from "../env.js";
 
 export interface NeynarUser {
 	fid: number;

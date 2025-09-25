@@ -1,3 +1,3 @@
-export * from "./game-room";
-export * from "./player";
-export * from "./socket";
+export * from "./game-room.js";
+export * from "./player.js";
+export * from "./socket/index.js";

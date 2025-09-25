@@ -1,6 +1,6 @@
 import type { Server, Socket } from "socket.io";
-import type { ServerToClientEvents } from "../types/socket/server-to-client";
-import type { ServerToClientSocketEvents } from "../types/socket/socket.enum";
+import type { ServerToClientEvents } from "../types/socket/server-to-client.js";
+import type { ServerToClientSocketEvents } from "../types/socket/socket.enum.js";
 
 export class SocketHandler {
 	protected socket: Socket;

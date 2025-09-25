@@ -1,7 +1,7 @@
 import { GameStatus } from "@prisma/client";
-import { gameRoomManager } from "../game-room-manager";
-import { ServerToClientSocketEvents } from "../types/socket/socket.enum";
-import { SocketHandler } from "./SocketHandler";
+import { gameRoomManager } from "../game-room-manager.js";
+import { ServerToClientSocketEvents } from "../types/socket/socket.enum.js";
+import { SocketHandler } from "./SocketHandler.js";
 
 export class DisconnectPlayerHandler extends SocketHandler {
 	async handle(): Promise<void> {

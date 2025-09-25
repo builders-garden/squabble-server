@@ -1,5 +1,5 @@
 import { createClient } from "redis";
-import { env } from "../env";
+import { env } from "../env.js";
 
 class RedisClient {
 	private static instance: RedisClient;

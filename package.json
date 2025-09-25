@@ -1,14 +1,15 @@
 {
   "name": "squabble-server",
   "version": "1.0.0",
-  "main": "src/index.ts",
+  "type": "module",
+  "exports": "./dist/index.js",
   "license": "MIT",
   "engines": {
     "node": "20"
   },
   "packageManager": "pnpm@10.15.1",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "node ./dist/index.js",
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "build:watch": "tsc --watch",
@@ -33,7 +34,7 @@
     "dotenv": "^16.4.5",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
-    "ky": "^1.8.2",
+    "ky": "^1.10.0",
     "morgan": "^1.10.1",
     "redis": "^5.1.1",
     "socket.io": "^4.8.1",

@@ -1,4 +1,4 @@
-import { env } from "./env";
+import { env } from "./env.js";
 
 export const baseOrigins = ["https://squabble.lol", "https://dev.squabble.lol"];
 export const localOrigins = [

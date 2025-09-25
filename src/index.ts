@@ -7,20 +7,20 @@ import express from "express";
 import helmet from "helmet";
 import morganLogger from "morgan";
 import { Server as SocketIOServer } from "socket.io";
-import { ConnectToLobbyHandler } from "./handlers/ConnectToLobby";
-import { DisconnectPlayerHandler } from "./handlers/DisconnectPlayer";
-import { PlaceLetterHandler } from "./handlers/PlaceLetterHandler";
-import { PlayerStakeConfirmedHandler } from "./handlers/PlayerStakeConfirmedHandler";
-import { PlayerStakeRefundedHandler } from "./handlers/PlayerStakeRefundedHandlers";
-import { RefreshAvailableLetters } from "./handlers/RefreshAvailableLetters";
-import { RemoveLetterHandler } from "./handlers/RemoveLetterHandler";
-import { StartGameHandler } from "./handlers/StartGameHandler";
-import { SubmitWordHandler } from "./handlers/SubmitWordHandler";
-import { baseOrigins, localOrigins } from "./lib/cors";
-import { env } from "./lib/env";
-import { setIOInstance } from "./lib/socket";
-import { handleError, handleNotFound } from "./middleware/error.middleware";
-import responseMiddleware from "./middleware/response";
+import { ConnectToLobbyHandler } from "./handlers/ConnectToLobby.js";
+import { DisconnectPlayerHandler } from "./handlers/DisconnectPlayer.js";
+import { PlaceLetterHandler } from "./handlers/PlaceLetterHandler.js";
+import { PlayerStakeConfirmedHandler } from "./handlers/PlayerStakeConfirmedHandler.js";
+import { PlayerStakeRefundedHandler } from "./handlers/PlayerStakeRefundedHandlers.js";
+import { RefreshAvailableLetters } from "./handlers/RefreshAvailableLetters.js";
+import { RemoveLetterHandler } from "./handlers/RemoveLetterHandler.js";
+import { StartGameHandler } from "./handlers/StartGameHandler.js";
+import { SubmitWordHandler } from "./handlers/SubmitWordHandler.js";
+import { baseOrigins, localOrigins } from "./lib/cors.js";
+import { env } from "./lib/env.js";
+import { setIOInstance } from "./lib/socket.js";
+import { handleError, handleNotFound } from "./middleware/error.middleware.js";
+import responseMiddleware from "./middleware/response.js";
 import type {
 	ConnectToLobbyEvent,
 	PlaceLetterEvent,
@@ -30,8 +30,8 @@ import type {
 	RemoveLetterEvent,
 	StartGameEvent,
 	SubmitWordEvent,
-} from "./types/socket";
-import { ClientToServerSocketEvents } from "./types/socket/socket.enum";
+} from "./types/socket/index.js";
+import { ClientToServerSocketEvents } from "./types/socket/socket.enum.js";
 
 // Load environment variables
 dotenv.config();

@@ -1,6 +1,6 @@
 import type { GameStatus } from "@prisma/client";
-import type { Player } from "../player";
-import { ServerToClientSocketEvents } from "./socket.enum";
+import type { Player } from "../player.js"; 
+import { ServerToClientSocketEvents } from "./socket.enum.js";
 
 export interface PlayerJoinedEvent {
 	player: Player;

@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { response } from "./response";
+import { response } from "./response.js";
 
 export function handleNotFound(
 	req: Request,

@@ -1,8 +1,8 @@
-import { gameRoomManager } from "../game-room-manager";
-import { getRandomAvailableLetters } from "../lib/words";
-import type { RefreshAvailableLettersEvent } from "../types";
-import { ServerToClientSocketEvents } from "../types/socket/socket.enum";
-import { SocketHandler } from "./SocketHandler";
+import { gameRoomManager } from "../game-room-manager.js";
+import { getRandomAvailableLetters } from "../lib/words.js";
+import type { RefreshAvailableLettersEvent } from "../types/index.js";
+import { ServerToClientSocketEvents } from "../types/socket/socket.enum.js";
+import { SocketHandler } from "./SocketHandler.js";
 
 export class RefreshAvailableLetters extends SocketHandler {
 	async handle({ playerId, gameId }: RefreshAvailableLettersEvent) {

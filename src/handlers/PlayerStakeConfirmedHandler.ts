@@ -1,9 +1,9 @@
 import { GameStatus } from "@prisma/client";
-import { gameRoomManager } from "../game-room-manager";
-import { sendAgentMessage } from "../lib/agent/api";
-import type { PlayerStakeConfirmedEvent } from "../types";
-import { ServerToClientSocketEvents } from "../types/socket/socket.enum";
-import { SocketHandler } from "./SocketHandler";
+import { gameRoomManager } from "../game-room-manager.js";
+import { sendAgentMessage } from "../lib/agent/api.js";
+import type { PlayerStakeConfirmedEvent } from "../types/index.js";
+import { ServerToClientSocketEvents } from "../types/socket/socket.enum.js";
+import { SocketHandler } from "./SocketHandler.js";
 
 
 export class PlayerStakeConfirmedHandler extends SocketHandler {

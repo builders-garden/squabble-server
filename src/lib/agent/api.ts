@@ -1,5 +1,5 @@
 import ky from "ky";
-import { env } from "../../lib/env";
+import { env } from "../../lib/env.js";
 
 export async function sendAgentMessage(
 	endpoint: string,

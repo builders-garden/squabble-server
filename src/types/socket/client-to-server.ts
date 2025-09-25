@@ -1,5 +1,5 @@
-import type { Player } from "../player";
-import { ClientToServerSocketEvents } from "./socket.enum";
+import type { Player } from "../player.js";
+import { ClientToServerSocketEvents } from "./socket.enum.js";
 
 export interface ConnectToLobbyEvent {
 	player: Player;

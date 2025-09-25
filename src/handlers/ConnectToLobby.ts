@@ -1,9 +1,9 @@
 import { GameStatus } from "@prisma/client";
-import { gameRoomManager } from "../game-room-manager";
-import { getGameById } from "../lib/prisma/games/index";
-import type { ConnectToLobbyEvent } from "../types";
-import { ServerToClientSocketEvents } from "../types/socket/socket.enum";
-import { SocketHandler } from "./SocketHandler";
+import { gameRoomManager } from "../game-room-manager.js";
+import { getGameById } from "../lib/prisma/games/index.js";
+import type { ConnectToLobbyEvent } from "../types/index.js";
+import { ServerToClientSocketEvents } from "../types/socket/socket.enum.js";
+import { SocketHandler } from "./SocketHandler.js";
 
 export class ConnectToLobbyHandler extends SocketHandler {
 	async handle({ player, gameId }: ConnectToLobbyEvent) {

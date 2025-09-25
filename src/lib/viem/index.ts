@@ -11,8 +11,8 @@ import {
 	SQUABBLE_CONTRACT_ABI,
 	SQUABBLE_CONTRACT_ADDRESS,
 	ZERO_ADDRESS,
-} from "../constants";
-import { env } from "../env";
+} from "../constants.js";
+import { env } from "../env.js";
 
 export async function setGameResult(
 	gameId: string,

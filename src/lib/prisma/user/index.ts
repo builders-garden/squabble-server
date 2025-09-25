@@ -1,4 +1,4 @@
-import { prisma } from "../client";
+import { prisma } from "../client.js";
 
 // Get a user by their FID
 export const getUserByFid = async (fid: number) => {

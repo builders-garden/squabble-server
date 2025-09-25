@@ -1,16 +1,16 @@
 import { GameStatus } from "@prisma/client";
-import { fetchUsersByFids } from "./lib/neynar/index";
+import { fetchUsersByFids } from "./lib/neynar/index.js";
 import {
 	createGameParticipant,
 	getGameParticipantByFidAndGameId,
 	updateGameParticipant,
 	updateGameParticipantPoints,
-} from "./lib/prisma/game-participants/index";
-import { getGameById, updateGame } from "./lib/prisma/games/index";
-import { redisClient } from "./lib/redis/index";
-import { joinGame } from "./lib/viem/index";
-import { getRandomWord } from "./lib/words";
-import type { GameRoom, Player } from "./types";
+} from "./lib/prisma/game-participants/index.js";
+import { getGameById, updateGame } from "./lib/prisma/games/index.js";
+import { redisClient } from "./lib/redis/index.js";
+import { joinGame } from "./lib/viem/index.js";
+import { getRandomWord } from "./lib/words.js";
+import type { GameRoom, Player } from "./types/index.js";
 
 export class GameRoomManager {
 	private static instance: GameRoomManager;

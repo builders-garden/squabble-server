@@ -1,9 +1,9 @@
 import { GameStatus } from "@prisma/client";
-import { gameRoomManager } from "../game-room-manager";
-import { sendAgentMessage } from "../lib/agent/api";
-import type { PlayerStakeRefundedEvent } from "../types";
-import { ServerToClientSocketEvents } from "../types/socket/socket.enum";
-import { SocketHandler } from "./SocketHandler";
+import { gameRoomManager } from "../game-room-manager.js";
+import { sendAgentMessage } from "../lib/agent/api.js";
+import type { PlayerStakeRefundedEvent } from "../types/index.js";
+import { ServerToClientSocketEvents } from "../types/socket/socket.enum.js";
+import { SocketHandler } from "./SocketHandler.js";
 export class PlayerStakeRefundedHandler extends SocketHandler {
 	async handle({ player, gameId, transactionHash }: PlayerStakeRefundedEvent) {
 		console.log(

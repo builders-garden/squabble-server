@@ -1,5 +1,5 @@
 import { type Game, GameStatus } from "@prisma/client";
-import { prisma } from "../client";
+import { prisma } from "../client.js";
 
 export interface GameWithParticipants extends Game {
 	participants: {
