@@ -1,0 +1,23 @@
+[phases.setup]
+nixPkgs = ['nodejs@20']
+
+[variables]
+NODE_VERSION = "20"
+PNPM_HOME="/app/.pnpm"
+
+[phases.install]
+onlyIncludeFiles = [
+  ".npmrc",
+  "package.json",
+  "pnpm-lock.yaml",
+  "./patches/",
+]
+cmds = [
+  "npm install -g corepack",
+  "corepack enable",
+  "corepack prepare pnpm@10.15.1 --activate", 
+  "pnpm install --frozen-lockfile"
+]
+
+[phases.build]
+cmds = ["pnpm run build"]

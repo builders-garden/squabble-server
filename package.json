@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "main": "src/index.ts",
   "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "pnpm@10.15.1",
   "scripts": {
     "start": "ts-node src/index.ts",
     "dev": "nodemon src/index.ts",
